@@ -1,0 +1,114 @@
+@{
+    ViewBag.Title = "Admin Dashboard";
+}
+<div class="dashboard-intro dashboard-intro-admin mb-3">
+    <div>
+        <p class="dashboard-kicker mb-1">Administration Center</p>
+        <h4 class="mb-1">Control core operations</h4>
+        <p class="mb-0">Get a quick pulse on platform users, revenue, and academic resources.</p>
+    </div>
+    <i class="bi bi-shield-check dashboard-intro-icon"></i>
+</div>
+<div class="row g-3">
+    <div class="col-md-6 col-xl-3">
+        <div class="card shadow-sm stat-card stat-card-admin">
+            <div class="card-body">
+                <div class="stat-icon"><i class="bi bi-people-fill"></i></div>
+                <p class="stat-label mb-1">Total Users</p>
+                <h3 class="stat-value mb-0">@ViewBag.Users</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card shadow-sm stat-card stat-card-admin">
+            <div class="card-body">
+                <div class="stat-icon"><i class="bi bi-journal-bookmark-fill"></i></div>
+                <p class="stat-label mb-1">Courses</p>
+                <h3 class="stat-value mb-0">@ViewBag.Courses</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card shadow-sm stat-card stat-card-admin">
+            <div class="card-body">
+                <div class="stat-icon"><i class="bi bi-credit-card-2-front-fill"></i></div>
+                <p class="stat-label mb-1">Payments</p>
+                <h3 class="stat-value mb-0">@ViewBag.Payments</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card shadow-sm stat-card stat-card-admin">
+            <div class="card-body">
+                <div class="stat-icon"><i class="bi bi-cash-coin"></i></div>
+                <p class="stat-label mb-1">Total Revenue</p>
+                <h3 class="stat-value mb-0">LKR @ViewBag.TotalPayments</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <div class="table-responsive admin-users-table-wrap p-3">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <h5 class="fw-semibold mb-0">Payment Revenue Trend</h5>
+            <span class="text-secondary small">Current month daily trend (Paid only)</span>
+        </div>
+        <div style="position: relative; height: 320px;">
+            <canvas id="adminPaymentChart"></canvas>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        (function () {
+            const chartEl = document.getElementById("adminPaymentChart");
+            if (!chartEl || typeof Chart === "undefined") return;
+
+            const labels = @Html.Raw(ViewBag.PaymentChartLabels ?? "[]");
+            const values = @Html.Raw(ViewBag.PaymentChartValues ?? "[]");
+
+            if (window.adminPaymentChartInstance) {
+                window.adminPaymentChartInstance.destroy();
+            }
+
+            window.adminPaymentChartInstance = new Chart(chartEl, {
+                type: "line",
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: "Revenue (LKR)",
+                        data: values,
+                        fill: true,
+                        tension: 0.35,
+                        borderWidth: 2,
+                        borderColor: "rgba(79, 70, 229, 1)",
+                        backgroundColor: "rgba(79, 70, 229, 0.14)",
+                        pointBackgroundColor: "rgba(37, 99, 235, 1)",
+                        pointBorderColor: "#fff",
+                        pointBorderWidth: 1.5,
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: true }
+                    },
+                    scales: {
+                        y: {
+                            ticks: {
+                                callback: function (value) {
+                                    return "LKR " + value;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        })();
+    </script>
+}

@@ -1,0 +1,250 @@
+@model IEnumerable<UniManage.Models.Message>
+@{
+    ViewBag.Title = "Messages";
+    var lecturers = ViewBag.Lecturers as IEnumerable<UniManage.Models.ApplicationUser> ?? Enumerable.Empty<UniManage.Models.ApplicationUser>();
+    var currentUserId = ViewBag.CurrentUserId as string ?? string.Empty;
+    var chattedLecturerIds = Model
+        .Where(m => m.SenderId == currentUserId || m.ReceiverId == currentUserId)
+        .Select(m => m.SenderId == currentUserId ? m.ReceiverId : m.SenderId)
+        .Where(id => !string.IsNullOrWhiteSpace(id))
+        .Distinct()
+        .ToList();
+    var chatLecturers = lecturers.Where(l => chattedLecturerIds.Contains(l.Id)).ToList();
+    var firstPartner = chatLecturers.FirstOrDefault();
+    var seedPartnerId = firstPartner != null ? firstPartner.Id : string.Empty;
+}
+
+<div class="chat-shell">
+    <div class="chat-sidebar">
+        <div class="chat-sidebar-header d-flex justify-content-between align-items-center gap-2">
+            <div>
+                <h5 class="mb-0">Lecturers</h5>
+                <small class="text-muted">Your conversations</small>
+            </div>
+            <button type="button" class="btn btn-sm btn-primary chat-add-btn" data-bs-toggle="modal" data-bs-target="#newChatModal">
+                <i class="bi bi-plus-lg me-1"></i>New Chat
+            </button>
+        </div>
+        <div id="partnerList" class="chat-partner-list">
+            @if (!chatLecturers.Any())
+            {
+                <div id="noConversationState" class="chat-empty-state mt-2">No chats yet. Click New Chat to start.</div>
+            }
+            else
+            {
+                <div id="noConversationState" class="chat-empty-state mt-2 d-none">No chats yet. Click New Chat to start.</div>
+                foreach (var lecturer in chatLecturers)
+                {
+                    var lastMessage = Model
+                        .Where(m => (m.SenderId == currentUserId && m.ReceiverId == lecturer.Id) || (m.SenderId == lecturer.Id && m.ReceiverId == currentUserId))
+                        .OrderByDescending(m => m.SentAtUtc)
+                        .FirstOrDefault();
+                    <button type="button" class="chat-partner-item" data-partner-id="@lecturer.Id" data-partner-name="@lecturer.FullName">
+                        <span class="chat-avatar">@((lecturer.FullName ?? "L").Trim().Substring(0, 1).ToUpperInvariant())</span>
+                        <span class="chat-partner-meta">
+                            <span class="chat-partner-name">@lecturer.FullName</span>
+                            <span class="chat-partner-preview">@(lastMessage != null ? lastMessage.Content : "Start a conversation")</span>
+                        </span>
+                    </button>
+                }
+            }
+        </div>
+    </div>
+
+    <div class="chat-main">
+        <div class="chat-main-header">
+            <div>
+                <h5 class="mb-0" id="activePartnerTitle">Select a lecturer</h5>
+                <small class="text-muted">Live chat</small>
+            </div>
+        </div>
+        <div id="chatMessages" class="chat-messages">
+            <div class="chat-empty-state">Choose a lecturer from left panel to start messaging.</div>
+        </div>
+        <form id="chatForm" class="chat-input-wrap">
+            @Html.AntiForgeryToken()
+            <input type="hidden" id="receiverId" name="receiverId" value="" />
+            <textarea id="messageContent" name="content" class="form-control chat-textarea" maxlength="1000" placeholder="Type your message..." disabled></textarea>
+            <button type="submit" id="sendButton" class="btn btn-primary chat-send-btn" disabled>
+                <i class="bi bi-send-fill me-1"></i>Send
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="newChatModal" tabindex="-1" aria-labelledby="newChatModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="newChatModalLabel">Start New Chat</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <label for="newChatLecturer" class="form-label">Select Lecturer</label>
+                <select id="newChatLecturer" class="form-select">
+                    <option value="">Choose lecturer</option>
+                    @foreach (var lecturer in lecturers)
+                    {
+                        <option value="@lecturer.Id" data-name="@lecturer.FullName">@lecturer.FullName (@lecturer.Email)</option>
+                    }
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="startNewChatBtn" class="btn btn-primary">Start Chat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            const currentUserId = "@currentUserId";
+            const initialPartnerId = "@seedPartnerId";
+            const partnerList = document.getElementById("partnerList");
+            const noConversationState = document.getElementById("noConversationState");
+            const activePartnerTitle = document.getElementById("activePartnerTitle");
+            const chatMessages = document.getElementById("chatMessages");
+            const receiverIdInput = document.getElementById("receiverId");
+            const messageContent = document.getElementById("messageContent");
+            const chatForm = document.getElementById("chatForm");
+            const sendButton = document.getElementById("sendButton");
+            const newChatLecturer = document.getElementById("newChatLecturer");
+            const startNewChatBtn = document.getElementById("startNewChatBtn");
+            const newChatModal = document.getElementById("newChatModal");
+            const token = chatForm.querySelector('input[name="__RequestVerificationToken"]').value;
+            let activePartnerId = "";
+            let pollHandle = null;
+
+            function escapeHtml(text) {
+                const div = document.createElement("div");
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            function setComposerEnabled(enabled) {
+                messageContent.disabled = !enabled;
+                sendButton.disabled = !enabled;
+            }
+
+            function createPartnerItem(partnerId, partnerName, previewText) {
+                const safeName = partnerName || "Lecturer";
+                const firstLetter = safeName.trim().charAt(0).toUpperCase();
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "chat-partner-item";
+                button.dataset.partnerId = partnerId;
+                button.dataset.partnerName = safeName;
+                button.innerHTML = `<span class="chat-avatar">${escapeHtml(firstLetter || "L")}</span>
+                                    <span class="chat-partner-meta">
+                                        <span class="chat-partner-name">${escapeHtml(safeName)}</span>
+                                        <span class="chat-partner-preview">${escapeHtml(previewText || "Start a conversation")}</span>
+                                    </span>`;
+                return button;
+            }
+
+            function ensurePartnerVisible(partnerId, partnerName) {
+                let row = partnerList.querySelector(`.chat-partner-item[data-partner-id="${partnerId}"]`);
+                if (!row) {
+                    row = createPartnerItem(partnerId, partnerName, "Start a conversation");
+                    partnerList.prepend(row);
+                }
+                if (noConversationState) {
+                    noConversationState.classList.add("d-none");
+                }
+                return row;
+            }
+
+            async function loadConversation() {
+                if (!activePartnerId) return;
+                const res = await fetch(`/Student/Conversation?partnerId=${encodeURIComponent(activePartnerId)}`, { cache: "no-store" });
+                if (!res.ok) return;
+                const data = await res.json();
+                if (!Array.isArray(data) || data.length === 0) {
+                    chatMessages.innerHTML = '<div class="chat-empty-state">No messages yet. Send first message.</div>';
+                    return;
+                }
+
+                chatMessages.innerHTML = data.map(item => {
+                    const mine = item.senderId === currentUserId;
+                    return `<div class="chat-bubble-row ${mine ? "mine" : "their"}">
+                                <div class="chat-bubble">
+                                    <div>${escapeHtml(item.content || "")}</div>
+                                    <small>${escapeHtml(item.sentAt || "")}</small>
+                                </div>
+                            </div>`;
+                }).join("");
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            async function switchPartner(partnerId, partnerName) {
+                activePartnerId = partnerId;
+                receiverIdInput.value = partnerId;
+                activePartnerTitle.textContent = partnerName || "Chat";
+                setComposerEnabled(true);
+
+                Array.from(partnerList.querySelectorAll(".chat-partner-item")).forEach(x => {
+                    x.classList.toggle("active", x.dataset.partnerId === partnerId);
+                });
+
+                await loadConversation();
+                if (pollHandle) clearInterval(pollHandle);
+                pollHandle = setInterval(loadConversation, 3000);
+            }
+
+            partnerList.addEventListener("click", function (e) {
+                const btn = e.target.closest(".chat-partner-item");
+                if (!btn) return;
+                switchPartner(btn.dataset.partnerId, btn.dataset.partnerName);
+            });
+
+            chatForm.addEventListener("submit", async function (e) {
+                e.preventDefault();
+                if (!activePartnerId) return;
+                const content = (messageContent.value || "").trim();
+                if (!content) return;
+
+                const payload = new URLSearchParams();
+                payload.append("receiverId", activePartnerId);
+                payload.append("content", content);
+                payload.append("__RequestVerificationToken", token);
+
+                const res = await fetch("/Student/SendMessageAjax", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" },
+                    body: payload.toString()
+                });
+
+                if (res.ok) {
+                    messageContent.value = "";
+                    const activeRow = partnerList.querySelector(`.chat-partner-item[data-partner-id="${activePartnerId}"] .chat-partner-preview`);
+                    if (activeRow) {
+                        activeRow.textContent = content;
+                    }
+                    await loadConversation();
+                }
+            });
+
+            startNewChatBtn.addEventListener("click", function () {
+                const partnerId = newChatLecturer.value;
+                if (!partnerId) return;
+                const option = newChatLecturer.options[newChatLecturer.selectedIndex];
+                const partnerName = option ? option.dataset.name : "Lecturer";
+                ensurePartnerVisible(partnerId, partnerName);
+                switchPartner(partnerId, partnerName);
+                if (window.bootstrap && newChatModal) {
+                    const modal = window.bootstrap.Modal.getOrCreateInstance(newChatModal);
+                    modal.hide();
+                }
+            });
+
+            if (initialPartnerId) {
+                const initialButton = partnerList.querySelector(`.chat-partner-item[data-partner-id="${initialPartnerId}"]`);
+                if (initialButton) {
+                    switchPartner(initialPartnerId, initialButton.dataset.partnerName);
+                }
+            }
+        })();
+    </script>
+}

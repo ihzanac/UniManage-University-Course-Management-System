@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title - UniManage</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <div class="app-bg-layer" aria-hidden="true">
+        <span class="bg-orb bg-orb-one"></span>
+        <span class="bg-orb bg-orb-two"></span>
+        <span class="bg-orb bg-orb-three"></span>
+        <span class="bg-sparkle bg-sparkle-one"></span>
+        <span class="bg-sparkle bg-sparkle-two"></span>
+        <span class="bg-sparkle bg-sparkle-three"></span>
+    </div>
+    <header class="sticky-top">
+        <nav class="navbar navbar-expand-lg navbar-dark glass-nav mb-4">
+            <div class="container-fluid">
+                <div class="nav-brand-wrap">
+                    <a class="navbar-brand fw-bold brand-logo" href="@Url.Action("Index", "Home")">
+                        <span class="brand-dot"></span>UniManage
+                    </a>
+                </div>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div id="mainNav" class="navbar-collapse collapse nav-main-wrap">
+                    <div class="nav-links-wrap">
+                        <ul class="navbar-nav nav-center-links align-items-lg-center">
+                            <li class="nav-item">
+                                <a class="nav-link nav-pill nav-route" href="@Url.Action("Index", "Home")">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link nav-pill nav-route" href="@Url.Action("Index", "Courses")">Courses</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link nav-pill nav-route" href="@Url.Action("About", "Home")">About</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link nav-pill nav-route" href="@Url.Action("Contact", "Home")">Contact</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="nav-auth-wrap">
+                        @Html.Partial("_LoginPartial")
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main role="main" class="container animate-fade pb-4 flex-fill">
+        @RenderBody()
+    </main>
+
+    <footer class="footer modern-footer mt-auto">
+        <div class="container py-4 d-flex justify-content-between flex-wrap gap-2">
+            <span>&copy; @DateTime.Now.Year UniManage. All rights reserved.</span>
+            <span><a href="@Url.Action("About", "Home")">About</a> | <a href="@Url.Action("Contact", "Home")">Contact</a></span>
+        </div>
+    </footer>
+
+    @if (User.Identity != null && User.Identity.IsAuthenticated)
+    {
+        if (User.IsInRole("Administrator"))
+        {
+            <a class="floating-dashboard-btn" title="Go to Dashboard" aria-label="Go to Dashboard" href="@Url.Action("Dashboard", "Admin")">
+                <i class="bi bi-speedometer2"></i>
+            </a>
+        }
+        else if (User.IsInRole("Lecturer"))
+        {
+            <a class="floating-dashboard-btn" title="Go to Dashboard" aria-label="Go to Dashboard" href="@Url.Action("Dashboard", "Lecturer")">
+                <i class="bi bi-speedometer2"></i>
+            </a>
+        }
+        else
+        {
+            <a class="floating-dashboard-btn" title="Go to Dashboard" aria-label="Go to Dashboard" href="@Url.Action("Dashboard", "Student")">
+                <i class="bi bi-speedometer2"></i>
+            </a>
+        }
+    }
+
+    @if (TempData["ToastMessage"] != null)
+    {
+        <div class="modal fade" id="statusToastModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content custom-status-modal border-0 shadow-lg">
+                    <div class="modal-header">
+                        <h5 class="modal-title d-flex align-items-center gap-2">
+                            <span class="status-dot status-dot-@TempData["ToastType"]"></span>
+                            @TempData["ToastTitle"]
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="mb-0">@TempData["ToastMessage"]</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary px-4" data-bs-dismiss="modal">OK</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js"></script>
+    @if (TempData["ToastMessage"] != null)
+    {
+        <script>
+            window.addEventListener("DOMContentLoaded", function() {
+                var modal = new bootstrap.Modal(document.getElementById("statusToastModal"));
+                modal.show();
+            });
+        </script>
+    }
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

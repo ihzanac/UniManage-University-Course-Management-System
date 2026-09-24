@@ -1,0 +1,55 @@
+@model UniManage.ViewModels.RegisterViewModel
+@{
+    ViewBag.Title = "Student Registration";
+    var today = DateTime.Today.ToString("yyyy-MM-dd");
+}
+<div class="row justify-content-center content-spacious">
+    <div class="col-md-7">
+        <div class="card shadow-sm p-2 no-hover-card">
+            <div class="card-body card-body-spacious">
+                <h3>Create Student Account</h3>
+                <form method="post">
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(false, "", new { @class = "text-danger mb-2" })
+                    <div class="row">
+                        <div class="col-md-6 mb-3">@Html.LabelFor(m => m.Name)@Html.TextBoxFor(m => m.Name, new { @class = "form-control" })@Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })</div>
+                        <div class="col-md-6 mb-3">@Html.LabelFor(m => m.Email)@Html.TextBoxFor(m => m.Email, new { @class = "form-control" })@Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })</div>
+                    </div>
+                    <div class="mb-3">@Html.LabelFor(m => m.Address)@Html.TextBoxFor(m => m.Address, new { @class = "form-control" })@Html.ValidationMessageFor(m => m.Address, "", new { @class = "text-danger" })</div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">@Html.LabelFor(m => m.DateOfBirth)@Html.TextBoxFor(m => m.DateOfBirth, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", min = "1950-01-01", max = today })@Html.ValidationMessageFor(m => m.DateOfBirth, "", new { @class = "text-danger" })</div>
+                        <div class="col-md-6 mb-3">
+                            @Html.LabelFor(m => m.Gender)
+                            @Html.DropDownListFor(
+                                m => m.Gender,
+                                new SelectList(
+                                    new[]
+                                    {
+                                        new { Value = "Male", Text = "Male" },
+                                        new { Value = "Female", Text = "Female" },
+                                        new { Value = "Prefer not to say", Text = "Prefer not to say" }
+                                    },
+                                    "Value",
+                                    "Text",
+                                    Model != null ? Model.Gender : "Male"),
+                                new { @class = "form-select" })
+                            @Html.ValidationMessageFor(m => m.Gender, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.Password)
+                        <div class="input-group">
+                            @Html.PasswordFor(m => m.Password, new { @class = "form-control", id = "registerPassword" })
+                            <button class="btn btn-outline-primary toggle-password" type="button" data-target="registerPassword">Show</button>
+                        </div>
+                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                    </div>
+                    <button class="btn btn-modern">Register</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @Html.Partial("_ValidationScriptsPartial")
+}

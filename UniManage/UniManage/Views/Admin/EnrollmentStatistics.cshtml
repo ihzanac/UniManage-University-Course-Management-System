@@ -1,0 +1,42 @@
+@model UniManage.ViewModels.EnrollmentStatisticsPageViewModel
+@{
+    ViewBag.Title = "Enrollment Statistics";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h5 class="fw-semibold mb-0">Enrollment Statistics</h5>
+    <div class="d-flex gap-2 flex-wrap">
+        <span class="total-users-pill">Total: @Model.TotalEnrollments</span>
+        <span class="total-users-pill">Active: @Model.ActiveEnrollments</span>
+        <span class="total-users-pill">Pending: @Model.PendingEnrollments</span>
+        <span class="total-users-pill">Cancelled: @Model.CancelledEnrollments</span>
+    </div>
+</div>
+
+<h6 class="fw-semibold mb-3">Top Courses by Enrollment</h6>
+@if (!Model.TopCourses.Any())
+{
+    <p class="text-secondary mb-0">No enrollment data available yet.</p>
+}
+else
+{
+    <div class="table-responsive admin-users-table-wrap">
+        <table class="table admin-users-table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Course</th>
+                    <th class="text-end">Enrollment Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.TopCourses)
+                {
+                    <tr>
+                        <td class="fw-semibold">@item.CourseTitle</td>
+                        <td class="text-end fw-semibold">@item.EnrollmentCount</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

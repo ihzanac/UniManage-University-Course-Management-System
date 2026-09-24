@@ -1,0 +1,135 @@
+@model UniManage.ViewModels.LecturerReportsViewModel
+@{
+    ViewBag.Title = "Reports";
+}
+
+<div class="mb-3">
+    <h5 class="fw-semibold mb-1">Lecturer Reports Center</h5>
+    <p class="text-secondary mb-0">View and export only your course popularity and student performance reports.</p>
+</div>
+
+<div class="d-flex justify-content-start mb-3">
+    <div class="d-flex flex-wrap gap-2 align-items-end">
+        <div style="min-width: 280px;">
+            <label class="form-label fw-semibold">Select Report</label>
+            <select id="lecturerReportTypeFilter" class="form-select">
+                <option value="">No report selected</option>
+                <option value="student-performance">Student Performance Report</option>
+                <option value="course-popularity">Course Popularity</option>
+            </select>
+        </div>
+        <div class="d-flex gap-2">
+            <a id="btnExportSelectedLecturerReport"
+               class="btn btn-outline-primary disabled"
+               aria-disabled="true"
+               href="#">
+                <i class="bi bi-file-earmark-pdf-fill me-1"></i>Export PDF
+            </a>
+            <a class="btn btn-primary"
+              
+               href="@Url.Action("ExportReportPdf", new { reportType = "all-reports" })">
+                <i class="bi bi-file-earmark-pdf-fill me-1"></i>Export All Reports PDF
+            </a>
+        </div>
+    </div>
+</div>
+
+<section class="lecturer-report-section mb-4" data-report-type="student-performance">
+    <h5 class="fw-semibold mb-3"><i class="bi bi-mortarboard-fill me-2 text-primary"></i>Student Performance Report</h5>
+    @if (!Model.StudentPerformance.Any())
+    {
+        <p class="text-secondary mb-0">No graded student performance data available for your courses.</p>
+    }
+    else
+    {
+        <div class="table-responsive admin-users-table-wrap">
+            <table class="table admin-users-table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th class="text-end">Graded Submissions</th>
+                        <th class="text-end">Average Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.StudentPerformance)
+                    {
+                        <tr>
+                            <td>
+                                <div class="fw-semibold">@item.StudentName</div>
+                                <div class="small text-secondary">@item.StudentEmail</div>
+                            </td>
+                            <td class="text-end fw-semibold">@item.GradedSubmissions</td>
+                            <td class="text-end fw-semibold">@item.AverageScore.ToString("N2")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>
+
+<section class="lecturer-report-section mb-4" data-report-type="course-popularity">
+    <h5 class="fw-semibold mb-3"><i class="bi bi-stars me-2 text-primary"></i>Course Popularity</h5>
+    @if (!Model.CoursePopularity.Any())
+    {
+        <p class="text-secondary mb-0">No enrollment data available for your courses.</p>
+    }
+    else
+    {
+        <div class="table-responsive admin-users-table-wrap">
+            <table class="table admin-users-table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Course</th>
+                        <th class="text-end">Enrollments</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.CoursePopularity)
+                    {
+                        <tr>
+                            <td>@item.CourseTitle</td>
+                            <td class="text-end fw-semibold">@item.EnrollmentCount</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>
+
+@section Scripts {
+    <script>
+        (function () {
+            const filter = document.getElementById("lecturerReportTypeFilter");
+            const exportSelectedBtn = document.getElementById("btnExportSelectedLecturerReport");
+            const sections = document.querySelectorAll(".lecturer-report-section");
+            if (!filter || sections.length === 0) return;
+
+            function applyFilter() {
+                const selected = filter.value;
+                sections.forEach(section => {
+                    const type = section.getAttribute("data-report-type");
+                    section.style.display = selected && selected === type ? "" : "none";
+                });
+
+                if (exportSelectedBtn) {
+                    if (selected) {
+                        exportSelectedBtn.href = '@Url.Action("ExportReportPdf", "Lecturer")' + '?reportType=' + encodeURIComponent(selected);
+                        exportSelectedBtn.classList.remove("disabled");
+                        exportSelectedBtn.removeAttribute("aria-disabled");
+                    } else {
+                        exportSelectedBtn.href = "#";
+                        exportSelectedBtn.classList.add("disabled");
+                        exportSelectedBtn.setAttribute("aria-disabled", "true");
+                    }
+                }
+            }
+
+            filter.addEventListener("change", applyFilter);
+            filter.value = "";
+            applyFilter();
+        })();
+    </script>
+}

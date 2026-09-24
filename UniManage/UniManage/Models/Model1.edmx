@@ -1,0 +1,1565 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="dbunimanageModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="__EFMigrationsHistory">
+          <Key>
+            <PropertyRef Name="MigrationId" />
+          </Key>
+          <Property Name="MigrationId" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="ProductVersion" Type="nvarchar" MaxLength="32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="sysdiagrams">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="principal_id" Type="int" Nullable="false" />
+          <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="version" Type="int" />
+          <Property Name="definition" Type="varbinary(max)" />
+        </EntityType>
+        <EntityType Name="tblAssignment">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CourseId" Type="int" Nullable="false" />
+          <Property Name="Title" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="Description" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="DeadlineUtc" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="MaterialFileName" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="MaterialFilePath" Type="nvarchar" MaxLength="300" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tblAssignmentSubmission">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="AssignmentId" Type="int" Nullable="false" />
+          <Property Name="StudentId" Type="nvarchar" MaxLength="450" Nullable="false" />
+          <Property Name="FilePath" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="SubmittedAtUtc" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="Status" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tblContactMessage">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="Email" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="Message" Type="nvarchar" MaxLength="1000" Nullable="false" />
+          <Property Name="SubmittedAtUtc" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tblCourse">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Title" Type="nvarchar" MaxLength="180" Nullable="false" />
+          <Property Name="Description" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="ImageUrl" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="Price" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="CourseCategoryId" Type="int" Nullable="false" />
+          <Property Name="LecturerId" Type="nvarchar" MaxLength="450" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tblCourseCategory">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="120" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tblCourseMaterial">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CourseId" Type="int" Nullable="false" />
+          <Property Name="Title" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="FilePath" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="CreatedAtUtc" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tblEnrollment">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CourseId" Type="int" Nullable="false" />
+          <Property Name="StudentId" Type="nvarchar" MaxLength="450" Nullable="false" />
+          <Property Name="Status" Type="int" Nullable="false" />
+          <Property Name="EnrolledAtUtc" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tblGrade">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="AssignmentSubmissionId" Type="int" Nullable="false" />
+          <Property Name="Score" Type="decimal" Precision="5" Scale="2" Nullable="false" />
+          <Property Name="Feedback" Type="nvarchar" MaxLength="800" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tblMessage">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SenderId" Type="nvarchar" MaxLength="450" Nullable="false" />
+          <Property Name="ReceiverId" Type="nvarchar" MaxLength="450" Nullable="false" />
+          <Property Name="Content" Type="nvarchar" MaxLength="1000" Nullable="false" />
+          <Property Name="SentAtUtc" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tblMessageNotification">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="MessageId" Type="int" Nullable="false" />
+          <Property Name="UserId" Type="nvarchar" MaxLength="450" Nullable="false" />
+          <Property Name="IsRead" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tblOtpToken">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserId" Type="nvarchar" MaxLength="450" Nullable="false" />
+          <Property Name="Purpose" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Code" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="ExpiresAtUtc" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="IsUsed" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tblPayment">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EnrollmentId" Type="int" Nullable="false" />
+          <Property Name="Amount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Status" Type="int" Nullable="false" />
+          <Property Name="StripeSessionId" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="StripePaymentIntentId" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="PaidAtUtc" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tblRoleClaims">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RoleId" Type="nvarchar" MaxLength="450" Nullable="false" />
+          <Property Name="ClaimType" Type="nvarchar(max)" />
+          <Property Name="ClaimValue" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="tblRoles">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="nvarchar" MaxLength="450" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="256" />
+          <Property Name="NormalizedName" Type="nvarchar" MaxLength="256" />
+          <Property Name="ConcurrencyStamp" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="tblSystemUsageLog">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserId" Type="nvarchar" MaxLength="450" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="120" Nullable="false" />
+          <Property Name="RoleName" Type="nvarchar" MaxLength="80" Nullable="false" />
+          <Property Name="ActionType" Type="nvarchar" MaxLength="80" Nullable="false" />
+          <Property Name="ControllerName" Type="nvarchar" MaxLength="80" Nullable="false" />
+          <Property Name="ActionName" Type="nvarchar" MaxLength="80" Nullable="false" />
+          <Property Name="Path" Type="nvarchar" MaxLength="250" Nullable="false" />
+          <Property Name="HttpMethod" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="StatusCode" Type="int" Nullable="false" />
+          <Property Name="IpAddress" Type="nvarchar" MaxLength="80" Nullable="false" />
+          <Property Name="Details" Type="nvarchar" MaxLength="300" Nullable="false" />
+          <Property Name="LoggedAtUtc" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tblUserClaims">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserId" Type="nvarchar" MaxLength="450" Nullable="false" />
+          <Property Name="ClaimType" Type="nvarchar(max)" />
+          <Property Name="ClaimValue" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="tblUserLogins">
+          <Key>
+            <PropertyRef Name="LoginProvider" />
+            <PropertyRef Name="ProviderKey" />
+          </Key>
+          <Property Name="LoginProvider" Type="nvarchar" MaxLength="450" Nullable="false" />
+          <Property Name="ProviderKey" Type="nvarchar" MaxLength="450" Nullable="false" />
+          <Property Name="ProviderDisplayName" Type="nvarchar(max)" />
+          <Property Name="UserId" Type="nvarchar" MaxLength="450" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tblUserRoles">
+          <Key>
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="RoleId" />
+          </Key>
+          <Property Name="UserId" Type="nvarchar" MaxLength="450" Nullable="false" />
+          <Property Name="RoleId" Type="nvarchar" MaxLength="450" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tblUsers">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="nvarchar" MaxLength="450" Nullable="false" />
+          <Property Name="FullName" Type="nvarchar" MaxLength="120" Nullable="false" />
+          <Property Name="Address" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="DateOfBirth" Type="datetime2" Precision="7" />
+          <Property Name="Gender" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="256" />
+          <Property Name="NormalizedUserName" Type="nvarchar" MaxLength="256" />
+          <Property Name="Email" Type="nvarchar" MaxLength="256" />
+          <Property Name="NormalizedEmail" Type="nvarchar" MaxLength="256" />
+          <Property Name="EmailConfirmed" Type="bit" Nullable="false" />
+          <Property Name="PasswordHash" Type="nvarchar(max)" />
+          <Property Name="SecurityStamp" Type="nvarchar(max)" />
+          <Property Name="ConcurrencyStamp" Type="nvarchar(max)" />
+          <Property Name="PhoneNumber" Type="nvarchar(max)" />
+          <Property Name="PhoneNumberConfirmed" Type="bit" Nullable="false" />
+          <Property Name="TwoFactorEnabled" Type="bit" Nullable="false" />
+          <Property Name="LockoutEnd" Type="datetime2" Precision="7" />
+          <Property Name="LockoutEnabled" Type="bit" Nullable="false" />
+          <Property Name="AccessFailedCount" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tblUserTokens">
+          <Key>
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="LoginProvider" />
+            <PropertyRef Name="Name" />
+          </Key>
+          <Property Name="UserId" Type="nvarchar" MaxLength="450" Nullable="false" />
+          <Property Name="LoginProvider" Type="nvarchar" MaxLength="450" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="450" Nullable="false" />
+          <Property Name="Value" Type="nvarchar(max)" />
+        </EntityType>
+        <Association Name="FK_tblAssignment_tblCourse_CourseId">
+          <End Role="tblCourse" Type="Self.tblCourse" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblAssignment" Type="Self.tblAssignment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblCourse">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblAssignment">
+              <PropertyRef Name="CourseId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblAssignmentSubmission_tblAssignment_AssignmentId">
+          <End Role="tblAssignment" Type="Self.tblAssignment" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblAssignmentSubmission" Type="Self.tblAssignmentSubmission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblAssignment">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblAssignmentSubmission">
+              <PropertyRef Name="AssignmentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblAssignmentSubmission_tblUsers_StudentId">
+          <End Role="tblUsers" Type="Self.tblUsers" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblAssignmentSubmission" Type="Self.tblAssignmentSubmission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblAssignmentSubmission">
+              <PropertyRef Name="StudentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblCourse_tblCourseCategory_CourseCategoryId">
+          <End Role="tblCourseCategory" Type="Self.tblCourseCategory" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblCourse" Type="Self.tblCourse" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblCourseCategory">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblCourse">
+              <PropertyRef Name="CourseCategoryId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblCourse_tblUsers_LecturerId">
+          <End Role="tblUsers" Type="Self.tblUsers" Multiplicity="1" />
+          <End Role="tblCourse" Type="Self.tblCourse" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblCourse">
+              <PropertyRef Name="LecturerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblCourseMaterial_tblCourse_CourseId">
+          <End Role="tblCourse" Type="Self.tblCourse" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblCourseMaterial" Type="Self.tblCourseMaterial" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblCourse">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblCourseMaterial">
+              <PropertyRef Name="CourseId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblEnrollment_tblCourse_CourseId">
+          <End Role="tblCourse" Type="Self.tblCourse" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblEnrollment" Type="Self.tblEnrollment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblCourse">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblEnrollment">
+              <PropertyRef Name="CourseId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblEnrollment_tblUsers_StudentId">
+          <End Role="tblUsers" Type="Self.tblUsers" Multiplicity="1" />
+          <End Role="tblEnrollment" Type="Self.tblEnrollment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblEnrollment">
+              <PropertyRef Name="StudentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblGrade_tblAssignmentSubmission_AssignmentSubmissionId">
+          <End Role="tblAssignmentSubmission" Type="Self.tblAssignmentSubmission" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblGrade" Type="Self.tblGrade" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblAssignmentSubmission">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblGrade">
+              <PropertyRef Name="AssignmentSubmissionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblMessage_tblUsers_ReceiverId">
+          <End Role="tblUsers" Type="Self.tblUsers" Multiplicity="1" />
+          <End Role="tblMessage" Type="Self.tblMessage" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblMessage">
+              <PropertyRef Name="ReceiverId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblMessage_tblUsers_SenderId">
+          <End Role="tblUsers" Type="Self.tblUsers" Multiplicity="1" />
+          <End Role="tblMessage" Type="Self.tblMessage" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblMessage">
+              <PropertyRef Name="SenderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblMessageNotification_tblMessage_MessageId">
+          <End Role="tblMessage" Type="Self.tblMessage" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblMessageNotification" Type="Self.tblMessageNotification" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblMessage">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblMessageNotification">
+              <PropertyRef Name="MessageId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblMessageNotification_tblUsers_UserId">
+          <End Role="tblUsers" Type="Self.tblUsers" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblMessageNotification" Type="Self.tblMessageNotification" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblMessageNotification">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblOtpToken_tblUsers_UserId">
+          <End Role="tblUsers" Type="Self.tblUsers" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblOtpToken" Type="Self.tblOtpToken" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblOtpToken">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblPayment_tblEnrollment_EnrollmentId">
+          <End Role="tblEnrollment" Type="Self.tblEnrollment" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblPayment" Type="Self.tblPayment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblEnrollment">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblPayment">
+              <PropertyRef Name="EnrollmentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblRoleClaims_tblRoles_RoleId">
+          <End Role="tblRoles" Type="Self.tblRoles" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblRoleClaims" Type="Self.tblRoleClaims" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblRoles">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblRoleClaims">
+              <PropertyRef Name="RoleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblUserClaims_tblUsers_UserId">
+          <End Role="tblUsers" Type="Self.tblUsers" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblUserClaims" Type="Self.tblUserClaims" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblUserClaims">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblUserLogins_tblUsers_UserId">
+          <End Role="tblUsers" Type="Self.tblUsers" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblUserLogins" Type="Self.tblUserLogins" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblUserLogins">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblUserRoles_tblRoles_RoleId">
+          <End Role="tblRoles" Type="Self.tblRoles" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblUserRoles" Type="Self.tblUserRoles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblRoles">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblUserRoles">
+              <PropertyRef Name="RoleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblUserRoles_tblUsers_UserId">
+          <End Role="tblUsers" Type="Self.tblUsers" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblUserRoles" Type="Self.tblUserRoles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblUserRoles">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblUserTokens_tblUsers_UserId">
+          <End Role="tblUsers" Type="Self.tblUsers" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblUserTokens" Type="Self.tblUserTokens" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblUserTokens">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="dbunimanageModelStoreContainer">
+          <EntitySet Name="__EFMigrationsHistory" EntityType="Self.__EFMigrationsHistory" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblAssignment" EntityType="Self.tblAssignment" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblAssignmentSubmission" EntityType="Self.tblAssignmentSubmission" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblContactMessage" EntityType="Self.tblContactMessage" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblCourse" EntityType="Self.tblCourse" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblCourseCategory" EntityType="Self.tblCourseCategory" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblCourseMaterial" EntityType="Self.tblCourseMaterial" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblEnrollment" EntityType="Self.tblEnrollment" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblGrade" EntityType="Self.tblGrade" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblMessage" EntityType="Self.tblMessage" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblMessageNotification" EntityType="Self.tblMessageNotification" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblOtpToken" EntityType="Self.tblOtpToken" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblPayment" EntityType="Self.tblPayment" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblRoleClaims" EntityType="Self.tblRoleClaims" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblRoles" EntityType="Self.tblRoles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblSystemUsageLog" EntityType="Self.tblSystemUsageLog" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblUserClaims" EntityType="Self.tblUserClaims" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblUserLogins" EntityType="Self.tblUserLogins" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblUserRoles" EntityType="Self.tblUserRoles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblUsers" EntityType="Self.tblUsers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblUserTokens" EntityType="Self.tblUserTokens" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_tblAssignment_tblCourse_CourseId" Association="Self.FK_tblAssignment_tblCourse_CourseId">
+            <End Role="tblCourse" EntitySet="tblCourse" />
+            <End Role="tblAssignment" EntitySet="tblAssignment" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblAssignmentSubmission_tblAssignment_AssignmentId" Association="Self.FK_tblAssignmentSubmission_tblAssignment_AssignmentId">
+            <End Role="tblAssignment" EntitySet="tblAssignment" />
+            <End Role="tblAssignmentSubmission" EntitySet="tblAssignmentSubmission" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblAssignmentSubmission_tblUsers_StudentId" Association="Self.FK_tblAssignmentSubmission_tblUsers_StudentId">
+            <End Role="tblUsers" EntitySet="tblUsers" />
+            <End Role="tblAssignmentSubmission" EntitySet="tblAssignmentSubmission" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblCourse_tblCourseCategory_CourseCategoryId" Association="Self.FK_tblCourse_tblCourseCategory_CourseCategoryId">
+            <End Role="tblCourseCategory" EntitySet="tblCourseCategory" />
+            <End Role="tblCourse" EntitySet="tblCourse" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblCourse_tblUsers_LecturerId" Association="Self.FK_tblCourse_tblUsers_LecturerId">
+            <End Role="tblUsers" EntitySet="tblUsers" />
+            <End Role="tblCourse" EntitySet="tblCourse" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblCourseMaterial_tblCourse_CourseId" Association="Self.FK_tblCourseMaterial_tblCourse_CourseId">
+            <End Role="tblCourse" EntitySet="tblCourse" />
+            <End Role="tblCourseMaterial" EntitySet="tblCourseMaterial" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblEnrollment_tblCourse_CourseId" Association="Self.FK_tblEnrollment_tblCourse_CourseId">
+            <End Role="tblCourse" EntitySet="tblCourse" />
+            <End Role="tblEnrollment" EntitySet="tblEnrollment" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblEnrollment_tblUsers_StudentId" Association="Self.FK_tblEnrollment_tblUsers_StudentId">
+            <End Role="tblUsers" EntitySet="tblUsers" />
+            <End Role="tblEnrollment" EntitySet="tblEnrollment" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblGrade_tblAssignmentSubmission_AssignmentSubmissionId" Association="Self.FK_tblGrade_tblAssignmentSubmission_AssignmentSubmissionId">
+            <End Role="tblAssignmentSubmission" EntitySet="tblAssignmentSubmission" />
+            <End Role="tblGrade" EntitySet="tblGrade" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblMessage_tblUsers_ReceiverId" Association="Self.FK_tblMessage_tblUsers_ReceiverId">
+            <End Role="tblUsers" EntitySet="tblUsers" />
+            <End Role="tblMessage" EntitySet="tblMessage" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblMessage_tblUsers_SenderId" Association="Self.FK_tblMessage_tblUsers_SenderId">
+            <End Role="tblUsers" EntitySet="tblUsers" />
+            <End Role="tblMessage" EntitySet="tblMessage" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblMessageNotification_tblMessage_MessageId" Association="Self.FK_tblMessageNotification_tblMessage_MessageId">
+            <End Role="tblMessage" EntitySet="tblMessage" />
+            <End Role="tblMessageNotification" EntitySet="tblMessageNotification" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblMessageNotification_tblUsers_UserId" Association="Self.FK_tblMessageNotification_tblUsers_UserId">
+            <End Role="tblUsers" EntitySet="tblUsers" />
+            <End Role="tblMessageNotification" EntitySet="tblMessageNotification" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblOtpToken_tblUsers_UserId" Association="Self.FK_tblOtpToken_tblUsers_UserId">
+            <End Role="tblUsers" EntitySet="tblUsers" />
+            <End Role="tblOtpToken" EntitySet="tblOtpToken" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblPayment_tblEnrollment_EnrollmentId" Association="Self.FK_tblPayment_tblEnrollment_EnrollmentId">
+            <End Role="tblEnrollment" EntitySet="tblEnrollment" />
+            <End Role="tblPayment" EntitySet="tblPayment" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblRoleClaims_tblRoles_RoleId" Association="Self.FK_tblRoleClaims_tblRoles_RoleId">
+            <End Role="tblRoles" EntitySet="tblRoles" />
+            <End Role="tblRoleClaims" EntitySet="tblRoleClaims" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblUserClaims_tblUsers_UserId" Association="Self.FK_tblUserClaims_tblUsers_UserId">
+            <End Role="tblUsers" EntitySet="tblUsers" />
+            <End Role="tblUserClaims" EntitySet="tblUserClaims" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblUserLogins_tblUsers_UserId" Association="Self.FK_tblUserLogins_tblUsers_UserId">
+            <End Role="tblUsers" EntitySet="tblUsers" />
+            <End Role="tblUserLogins" EntitySet="tblUserLogins" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblUserRoles_tblRoles_RoleId" Association="Self.FK_tblUserRoles_tblRoles_RoleId">
+            <End Role="tblRoles" EntitySet="tblRoles" />
+            <End Role="tblUserRoles" EntitySet="tblUserRoles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblUserRoles_tblUsers_UserId" Association="Self.FK_tblUserRoles_tblUsers_UserId">
+            <End Role="tblUsers" EntitySet="tblUsers" />
+            <End Role="tblUserRoles" EntitySet="tblUserRoles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblUserTokens_tblUsers_UserId" Association="Self.FK_tblUserTokens_tblUsers_UserId">
+            <End Role="tblUsers" EntitySet="tblUsers" />
+            <End Role="tblUserTokens" EntitySet="tblUserTokens" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="dbunimanageModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="C__EFMigrationsHistory">
+          <Key>
+            <PropertyRef Name="MigrationId" />
+          </Key>
+          <Property Name="MigrationId" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ProductVersion" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" />
+        </EntityType>
+        <EntityType Name="sysdiagram">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="principal_id" Type="Int32" Nullable="false" />
+          <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="version" Type="Int32" />
+          <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
+        </EntityType>
+        <EntityType Name="tblAssignment">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CourseId" Type="Int32" Nullable="false" />
+          <Property Name="Title" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="DeadlineUtc" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="MaterialFileName" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="MaterialFilePath" Type="String" MaxLength="300" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="tblCourse" Relationship="Self.FK_tblAssignment_tblCourse_CourseId" FromRole="tblAssignment" ToRole="tblCourse" />
+          <NavigationProperty Name="tblAssignmentSubmissions" Relationship="Self.FK_tblAssignmentSubmission_tblAssignment_AssignmentId" FromRole="tblAssignment" ToRole="tblAssignmentSubmission" />
+        </EntityType>
+        <EntityType Name="tblAssignmentSubmission">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AssignmentId" Type="Int32" Nullable="false" />
+          <Property Name="StudentId" Type="String" MaxLength="450" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="FilePath" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="SubmittedAtUtc" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="Status" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="tblAssignment" Relationship="Self.FK_tblAssignmentSubmission_tblAssignment_AssignmentId" FromRole="tblAssignmentSubmission" ToRole="tblAssignment" />
+          <NavigationProperty Name="tblUser" Relationship="Self.FK_tblAssignmentSubmission_tblUsers_StudentId" FromRole="tblAssignmentSubmission" ToRole="tblUsers" />
+          <NavigationProperty Name="tblGrades" Relationship="Self.FK_tblGrade_tblAssignmentSubmission_AssignmentSubmissionId" FromRole="tblAssignmentSubmission" ToRole="tblGrade" />
+        </EntityType>
+        <EntityType Name="tblContactMessage">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Email" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Message" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="SubmittedAtUtc" Type="DateTime" Nullable="false" Precision="7" />
+        </EntityType>
+        <EntityType Name="tblCourse">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Title" Type="String" MaxLength="180" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ImageUrl" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Price" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="CourseCategoryId" Type="Int32" Nullable="false" />
+          <Property Name="LecturerId" Type="String" MaxLength="450" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="tblAssignments" Relationship="Self.FK_tblAssignment_tblCourse_CourseId" FromRole="tblCourse" ToRole="tblAssignment" />
+          <NavigationProperty Name="tblCourseCategory" Relationship="Self.FK_tblCourse_tblCourseCategory_CourseCategoryId" FromRole="tblCourse" ToRole="tblCourseCategory" />
+          <NavigationProperty Name="tblUser" Relationship="Self.FK_tblCourse_tblUsers_LecturerId" FromRole="tblCourse" ToRole="tblUsers" />
+          <NavigationProperty Name="tblCourseMaterials" Relationship="Self.FK_tblCourseMaterial_tblCourse_CourseId" FromRole="tblCourse" ToRole="tblCourseMaterial" />
+          <NavigationProperty Name="tblEnrollments" Relationship="Self.FK_tblEnrollment_tblCourse_CourseId" FromRole="tblCourse" ToRole="tblEnrollment" />
+        </EntityType>
+        <EntityType Name="tblCourseCategory">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="120" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="tblCourses" Relationship="Self.FK_tblCourse_tblCourseCategory_CourseCategoryId" FromRole="tblCourseCategory" ToRole="tblCourse" />
+        </EntityType>
+        <EntityType Name="tblCourseMaterial">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CourseId" Type="Int32" Nullable="false" />
+          <Property Name="Title" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="FilePath" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="CreatedAtUtc" Type="DateTime" Nullable="false" Precision="7" />
+          <NavigationProperty Name="tblCourse" Relationship="Self.FK_tblCourseMaterial_tblCourse_CourseId" FromRole="tblCourseMaterial" ToRole="tblCourse" />
+        </EntityType>
+        <EntityType Name="tblEnrollment">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CourseId" Type="Int32" Nullable="false" />
+          <Property Name="StudentId" Type="String" MaxLength="450" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Status" Type="Int32" Nullable="false" />
+          <Property Name="EnrolledAtUtc" Type="DateTime" Nullable="false" Precision="7" />
+          <NavigationProperty Name="tblCourse" Relationship="Self.FK_tblEnrollment_tblCourse_CourseId" FromRole="tblEnrollment" ToRole="tblCourse" />
+          <NavigationProperty Name="tblUser" Relationship="Self.FK_tblEnrollment_tblUsers_StudentId" FromRole="tblEnrollment" ToRole="tblUsers" />
+          <NavigationProperty Name="tblPayments" Relationship="Self.FK_tblPayment_tblEnrollment_EnrollmentId" FromRole="tblEnrollment" ToRole="tblPayment" />
+        </EntityType>
+        <EntityType Name="tblGrade">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AssignmentSubmissionId" Type="Int32" Nullable="false" />
+          <Property Name="Score" Type="Decimal" Precision="5" Scale="2" Nullable="false" />
+          <Property Name="Feedback" Type="String" MaxLength="800" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="tblAssignmentSubmission" Relationship="Self.FK_tblGrade_tblAssignmentSubmission_AssignmentSubmissionId" FromRole="tblGrade" ToRole="tblAssignmentSubmission" />
+        </EntityType>
+        <EntityType Name="tblMessage">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SenderId" Type="String" MaxLength="450" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ReceiverId" Type="String" MaxLength="450" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Content" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="SentAtUtc" Type="DateTime" Nullable="false" Precision="7" />
+          <NavigationProperty Name="tblUser" Relationship="Self.FK_tblMessage_tblUsers_ReceiverId" FromRole="tblMessage" ToRole="tblUsers" />
+          <NavigationProperty Name="tblUser1" Relationship="Self.FK_tblMessage_tblUsers_SenderId" FromRole="tblMessage" ToRole="tblUsers" />
+          <NavigationProperty Name="tblMessageNotifications" Relationship="Self.FK_tblMessageNotification_tblMessage_MessageId" FromRole="tblMessage" ToRole="tblMessageNotification" />
+        </EntityType>
+        <EntityType Name="tblMessageNotification">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="MessageId" Type="Int32" Nullable="false" />
+          <Property Name="UserId" Type="String" MaxLength="450" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="IsRead" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="tblMessage" Relationship="Self.FK_tblMessageNotification_tblMessage_MessageId" FromRole="tblMessageNotification" ToRole="tblMessage" />
+          <NavigationProperty Name="tblUser" Relationship="Self.FK_tblMessageNotification_tblUsers_UserId" FromRole="tblMessageNotification" ToRole="tblUsers" />
+        </EntityType>
+        <EntityType Name="tblOtpToken">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserId" Type="String" MaxLength="450" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Purpose" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Code" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ExpiresAtUtc" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="IsUsed" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="tblUser" Relationship="Self.FK_tblOtpToken_tblUsers_UserId" FromRole="tblOtpToken" ToRole="tblUsers" />
+        </EntityType>
+        <EntityType Name="tblPayment">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EnrollmentId" Type="Int32" Nullable="false" />
+          <Property Name="Amount" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Status" Type="Int32" Nullable="false" />
+          <Property Name="StripeSessionId" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="StripePaymentIntentId" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="PaidAtUtc" Type="DateTime" Nullable="false" Precision="7" />
+          <NavigationProperty Name="tblEnrollment" Relationship="Self.FK_tblPayment_tblEnrollment_EnrollmentId" FromRole="tblPayment" ToRole="tblEnrollment" />
+        </EntityType>
+        <EntityType Name="tblRoleClaim">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RoleId" Type="String" MaxLength="450" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ClaimType" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ClaimValue" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="tblRole" Relationship="Self.FK_tblRoleClaims_tblRoles_RoleId" FromRole="tblRoleClaims" ToRole="tblRoles" />
+        </EntityType>
+        <EntityType Name="tblRole">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="String" MaxLength="450" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="NormalizedName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="ConcurrencyStamp" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="tblRoleClaims" Relationship="Self.FK_tblRoleClaims_tblRoles_RoleId" FromRole="tblRoles" ToRole="tblRoleClaims" />
+          <NavigationProperty Name="tblUsers" Relationship="Self.tblUserRoles" FromRole="tblRoles" ToRole="tblUsers" />
+        </EntityType>
+        <EntityType Name="tblSystemUsageLog">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserId" Type="String" MaxLength="450" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="UserName" Type="String" MaxLength="120" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="RoleName" Type="String" MaxLength="80" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ActionType" Type="String" MaxLength="80" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ControllerName" Type="String" MaxLength="80" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ActionName" Type="String" MaxLength="80" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Path" Type="String" MaxLength="250" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="HttpMethod" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="StatusCode" Type="Int32" Nullable="false" />
+          <Property Name="IpAddress" Type="String" MaxLength="80" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Details" Type="String" MaxLength="300" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="LoggedAtUtc" Type="DateTime" Nullable="false" Precision="7" />
+        </EntityType>
+        <EntityType Name="tblUserClaim">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserId" Type="String" MaxLength="450" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ClaimType" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ClaimValue" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="tblUser" Relationship="Self.FK_tblUserClaims_tblUsers_UserId" FromRole="tblUserClaims" ToRole="tblUsers" />
+        </EntityType>
+        <EntityType Name="tblUserLogin">
+          <Key>
+            <PropertyRef Name="LoginProvider" />
+            <PropertyRef Name="ProviderKey" />
+          </Key>
+          <Property Name="LoginProvider" Type="String" MaxLength="450" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ProviderKey" Type="String" MaxLength="450" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ProviderDisplayName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="UserId" Type="String" MaxLength="450" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="tblUser" Relationship="Self.FK_tblUserLogins_tblUsers_UserId" FromRole="tblUserLogins" ToRole="tblUsers" />
+        </EntityType>
+        <EntityType Name="tblUser">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="String" MaxLength="450" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="FullName" Type="String" MaxLength="120" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Address" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="DateOfBirth" Type="DateTime" Precision="7" />
+          <Property Name="Gender" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="UserName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="NormalizedUserName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="Email" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="NormalizedEmail" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="EmailConfirmed" Type="Boolean" Nullable="false" />
+          <Property Name="PasswordHash" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="SecurityStamp" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ConcurrencyStamp" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PhoneNumber" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PhoneNumberConfirmed" Type="Boolean" Nullable="false" />
+          <Property Name="TwoFactorEnabled" Type="Boolean" Nullable="false" />
+          <Property Name="LockoutEnd" Type="DateTime" Precision="7" />
+          <Property Name="LockoutEnabled" Type="Boolean" Nullable="false" />
+          <Property Name="AccessFailedCount" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="tblAssignmentSubmissions" Relationship="Self.FK_tblAssignmentSubmission_tblUsers_StudentId" FromRole="tblUsers" ToRole="tblAssignmentSubmission" />
+          <NavigationProperty Name="tblCourses" Relationship="Self.FK_tblCourse_tblUsers_LecturerId" FromRole="tblUsers" ToRole="tblCourse" />
+          <NavigationProperty Name="tblEnrollments" Relationship="Self.FK_tblEnrollment_tblUsers_StudentId" FromRole="tblUsers" ToRole="tblEnrollment" />
+          <NavigationProperty Name="tblMessages" Relationship="Self.FK_tblMessage_tblUsers_ReceiverId" FromRole="tblUsers" ToRole="tblMessage" />
+          <NavigationProperty Name="tblMessages1" Relationship="Self.FK_tblMessage_tblUsers_SenderId" FromRole="tblUsers" ToRole="tblMessage" />
+          <NavigationProperty Name="tblMessageNotifications" Relationship="Self.FK_tblMessageNotification_tblUsers_UserId" FromRole="tblUsers" ToRole="tblMessageNotification" />
+          <NavigationProperty Name="tblOtpTokens" Relationship="Self.FK_tblOtpToken_tblUsers_UserId" FromRole="tblUsers" ToRole="tblOtpToken" />
+          <NavigationProperty Name="tblUserClaims" Relationship="Self.FK_tblUserClaims_tblUsers_UserId" FromRole="tblUsers" ToRole="tblUserClaims" />
+          <NavigationProperty Name="tblUserLogins" Relationship="Self.FK_tblUserLogins_tblUsers_UserId" FromRole="tblUsers" ToRole="tblUserLogins" />
+          <NavigationProperty Name="tblUserTokens" Relationship="Self.FK_tblUserTokens_tblUsers_UserId" FromRole="tblUsers" ToRole="tblUserTokens" />
+          <NavigationProperty Name="tblRoles" Relationship="Self.tblUserRoles" FromRole="tblUsers" ToRole="tblRoles" />
+        </EntityType>
+        <EntityType Name="tblUserToken">
+          <Key>
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="LoginProvider" />
+            <PropertyRef Name="Name" />
+          </Key>
+          <Property Name="UserId" Type="String" MaxLength="450" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="LoginProvider" Type="String" MaxLength="450" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="450" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Value" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="tblUser" Relationship="Self.FK_tblUserTokens_tblUsers_UserId" FromRole="tblUserTokens" ToRole="tblUsers" />
+        </EntityType>
+        <Association Name="FK_tblAssignment_tblCourse_CourseId">
+          <End Role="tblCourse" Type="Self.tblCourse" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblAssignment" Type="Self.tblAssignment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblCourse">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblAssignment">
+              <PropertyRef Name="CourseId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblAssignmentSubmission_tblAssignment_AssignmentId">
+          <End Role="tblAssignment" Type="Self.tblAssignment" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblAssignmentSubmission" Type="Self.tblAssignmentSubmission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblAssignment">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblAssignmentSubmission">
+              <PropertyRef Name="AssignmentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblAssignmentSubmission_tblUsers_StudentId">
+          <End Role="tblUsers" Type="Self.tblUser" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblAssignmentSubmission" Type="Self.tblAssignmentSubmission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblAssignmentSubmission">
+              <PropertyRef Name="StudentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblGrade_tblAssignmentSubmission_AssignmentSubmissionId">
+          <End Role="tblAssignmentSubmission" Type="Self.tblAssignmentSubmission" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblGrade" Type="Self.tblGrade" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblAssignmentSubmission">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblGrade">
+              <PropertyRef Name="AssignmentSubmissionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblCourse_tblCourseCategory_CourseCategoryId">
+          <End Role="tblCourseCategory" Type="Self.tblCourseCategory" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblCourse" Type="Self.tblCourse" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblCourseCategory">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblCourse">
+              <PropertyRef Name="CourseCategoryId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblCourse_tblUsers_LecturerId">
+          <End Role="tblUsers" Type="Self.tblUser" Multiplicity="1" />
+          <End Role="tblCourse" Type="Self.tblCourse" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblCourse">
+              <PropertyRef Name="LecturerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblCourseMaterial_tblCourse_CourseId">
+          <End Role="tblCourse" Type="Self.tblCourse" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblCourseMaterial" Type="Self.tblCourseMaterial" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblCourse">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblCourseMaterial">
+              <PropertyRef Name="CourseId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblEnrollment_tblCourse_CourseId">
+          <End Role="tblCourse" Type="Self.tblCourse" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblEnrollment" Type="Self.tblEnrollment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblCourse">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblEnrollment">
+              <PropertyRef Name="CourseId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblEnrollment_tblUsers_StudentId">
+          <End Role="tblUsers" Type="Self.tblUser" Multiplicity="1" />
+          <End Role="tblEnrollment" Type="Self.tblEnrollment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblEnrollment">
+              <PropertyRef Name="StudentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblPayment_tblEnrollment_EnrollmentId">
+          <End Role="tblEnrollment" Type="Self.tblEnrollment" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblPayment" Type="Self.tblPayment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblEnrollment">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblPayment">
+              <PropertyRef Name="EnrollmentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblMessage_tblUsers_ReceiverId">
+          <End Role="tblUsers" Type="Self.tblUser" Multiplicity="1" />
+          <End Role="tblMessage" Type="Self.tblMessage" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblMessage">
+              <PropertyRef Name="ReceiverId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblMessage_tblUsers_SenderId">
+          <End Role="tblUsers" Type="Self.tblUser" Multiplicity="1" />
+          <End Role="tblMessage" Type="Self.tblMessage" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblMessage">
+              <PropertyRef Name="SenderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblMessageNotification_tblMessage_MessageId">
+          <End Role="tblMessage" Type="Self.tblMessage" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblMessageNotification" Type="Self.tblMessageNotification" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblMessage">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblMessageNotification">
+              <PropertyRef Name="MessageId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblMessageNotification_tblUsers_UserId">
+          <End Role="tblUsers" Type="Self.tblUser" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblMessageNotification" Type="Self.tblMessageNotification" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblMessageNotification">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblOtpToken_tblUsers_UserId">
+          <End Role="tblUsers" Type="Self.tblUser" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblOtpToken" Type="Self.tblOtpToken" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblOtpToken">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblRoleClaims_tblRoles_RoleId">
+          <End Role="tblRoles" Type="Self.tblRole" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblRoleClaims" Type="Self.tblRoleClaim" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblRoles">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblRoleClaims">
+              <PropertyRef Name="RoleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblUserClaims_tblUsers_UserId">
+          <End Role="tblUsers" Type="Self.tblUser" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblUserClaims" Type="Self.tblUserClaim" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblUserClaims">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblUserLogins_tblUsers_UserId">
+          <End Role="tblUsers" Type="Self.tblUser" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblUserLogins" Type="Self.tblUserLogin" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblUserLogins">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblUserTokens_tblUsers_UserId">
+          <End Role="tblUsers" Type="Self.tblUser" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblUserTokens" Type="Self.tblUserToken" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblUserTokens">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="tblUserRoles">
+          <End Role="tblRoles" Type="Self.tblRole" Multiplicity="*" />
+          <End Role="tblUsers" Type="Self.tblUser" Multiplicity="*" />
+        </Association>
+        <EntityContainer Name="dbunimanageEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="C__EFMigrationsHistory" EntityType="Self.C__EFMigrationsHistory" />
+          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagram" />
+          <EntitySet Name="tblAssignments" EntityType="Self.tblAssignment" />
+          <EntitySet Name="tblAssignmentSubmissions" EntityType="Self.tblAssignmentSubmission" />
+          <EntitySet Name="tblContactMessages" EntityType="Self.tblContactMessage" />
+          <EntitySet Name="tblCourses" EntityType="Self.tblCourse" />
+          <EntitySet Name="tblCourseCategories" EntityType="Self.tblCourseCategory" />
+          <EntitySet Name="tblCourseMaterials" EntityType="Self.tblCourseMaterial" />
+          <EntitySet Name="tblEnrollments" EntityType="Self.tblEnrollment" />
+          <EntitySet Name="tblGrades" EntityType="Self.tblGrade" />
+          <EntitySet Name="tblMessages" EntityType="Self.tblMessage" />
+          <EntitySet Name="tblMessageNotifications" EntityType="Self.tblMessageNotification" />
+          <EntitySet Name="tblOtpTokens" EntityType="Self.tblOtpToken" />
+          <EntitySet Name="tblPayments" EntityType="Self.tblPayment" />
+          <EntitySet Name="tblRoleClaims" EntityType="Self.tblRoleClaim" />
+          <EntitySet Name="tblRoles" EntityType="Self.tblRole" />
+          <EntitySet Name="tblSystemUsageLogs" EntityType="Self.tblSystemUsageLog" />
+          <EntitySet Name="tblUserClaims" EntityType="Self.tblUserClaim" />
+          <EntitySet Name="tblUserLogins" EntityType="Self.tblUserLogin" />
+          <EntitySet Name="tblUsers" EntityType="Self.tblUser" />
+          <EntitySet Name="tblUserTokens" EntityType="Self.tblUserToken" />
+          <AssociationSet Name="FK_tblAssignment_tblCourse_CourseId" Association="Self.FK_tblAssignment_tblCourse_CourseId">
+            <End Role="tblCourse" EntitySet="tblCourses" />
+            <End Role="tblAssignment" EntitySet="tblAssignments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblAssignmentSubmission_tblAssignment_AssignmentId" Association="Self.FK_tblAssignmentSubmission_tblAssignment_AssignmentId">
+            <End Role="tblAssignment" EntitySet="tblAssignments" />
+            <End Role="tblAssignmentSubmission" EntitySet="tblAssignmentSubmissions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblAssignmentSubmission_tblUsers_StudentId" Association="Self.FK_tblAssignmentSubmission_tblUsers_StudentId">
+            <End Role="tblUsers" EntitySet="tblUsers" />
+            <End Role="tblAssignmentSubmission" EntitySet="tblAssignmentSubmissions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblGrade_tblAssignmentSubmission_AssignmentSubmissionId" Association="Self.FK_tblGrade_tblAssignmentSubmission_AssignmentSubmissionId">
+            <End Role="tblAssignmentSubmission" EntitySet="tblAssignmentSubmissions" />
+            <End Role="tblGrade" EntitySet="tblGrades" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblCourse_tblCourseCategory_CourseCategoryId" Association="Self.FK_tblCourse_tblCourseCategory_CourseCategoryId">
+            <End Role="tblCourseCategory" EntitySet="tblCourseCategories" />
+            <End Role="tblCourse" EntitySet="tblCourses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblCourse_tblUsers_LecturerId" Association="Self.FK_tblCourse_tblUsers_LecturerId">
+            <End Role="tblUsers" EntitySet="tblUsers" />
+            <End Role="tblCourse" EntitySet="tblCourses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblCourseMaterial_tblCourse_CourseId" Association="Self.FK_tblCourseMaterial_tblCourse_CourseId">
+            <End Role="tblCourse" EntitySet="tblCourses" />
+            <End Role="tblCourseMaterial" EntitySet="tblCourseMaterials" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblEnrollment_tblCourse_CourseId" Association="Self.FK_tblEnrollment_tblCourse_CourseId">
+            <End Role="tblCourse" EntitySet="tblCourses" />
+            <End Role="tblEnrollment" EntitySet="tblEnrollments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblEnrollment_tblUsers_StudentId" Association="Self.FK_tblEnrollment_tblUsers_StudentId">
+            <End Role="tblUsers" EntitySet="tblUsers" />
+            <End Role="tblEnrollment" EntitySet="tblEnrollments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblPayment_tblEnrollment_EnrollmentId" Association="Self.FK_tblPayment_tblEnrollment_EnrollmentId">
+            <End Role="tblEnrollment" EntitySet="tblEnrollments" />
+            <End Role="tblPayment" EntitySet="tblPayments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblMessage_tblUsers_ReceiverId" Association="Self.FK_tblMessage_tblUsers_ReceiverId">
+            <End Role="tblUsers" EntitySet="tblUsers" />
+            <End Role="tblMessage" EntitySet="tblMessages" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblMessage_tblUsers_SenderId" Association="Self.FK_tblMessage_tblUsers_SenderId">
+            <End Role="tblUsers" EntitySet="tblUsers" />
+            <End Role="tblMessage" EntitySet="tblMessages" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblMessageNotification_tblMessage_MessageId" Association="Self.FK_tblMessageNotification_tblMessage_MessageId">
+            <End Role="tblMessage" EntitySet="tblMessages" />
+            <End Role="tblMessageNotification" EntitySet="tblMessageNotifications" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblMessageNotification_tblUsers_UserId" Association="Self.FK_tblMessageNotification_tblUsers_UserId">
+            <End Role="tblUsers" EntitySet="tblUsers" />
+            <End Role="tblMessageNotification" EntitySet="tblMessageNotifications" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblOtpToken_tblUsers_UserId" Association="Self.FK_tblOtpToken_tblUsers_UserId">
+            <End Role="tblUsers" EntitySet="tblUsers" />
+            <End Role="tblOtpToken" EntitySet="tblOtpTokens" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblRoleClaims_tblRoles_RoleId" Association="Self.FK_tblRoleClaims_tblRoles_RoleId">
+            <End Role="tblRoles" EntitySet="tblRoles" />
+            <End Role="tblRoleClaims" EntitySet="tblRoleClaims" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblUserClaims_tblUsers_UserId" Association="Self.FK_tblUserClaims_tblUsers_UserId">
+            <End Role="tblUsers" EntitySet="tblUsers" />
+            <End Role="tblUserClaims" EntitySet="tblUserClaims" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblUserLogins_tblUsers_UserId" Association="Self.FK_tblUserLogins_tblUsers_UserId">
+            <End Role="tblUsers" EntitySet="tblUsers" />
+            <End Role="tblUserLogins" EntitySet="tblUserLogins" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblUserTokens_tblUsers_UserId" Association="Self.FK_tblUserTokens_tblUsers_UserId">
+            <End Role="tblUsers" EntitySet="tblUsers" />
+            <End Role="tblUserTokens" EntitySet="tblUserTokens" />
+          </AssociationSet>
+          <AssociationSet Name="tblUserRoles" Association="Self.tblUserRoles">
+            <End Role="tblRoles" EntitySet="tblRoles" />
+            <End Role="tblUsers" EntitySet="tblUsers" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="dbunimanageModelStoreContainer" CdmEntityContainer="dbunimanageEntities">
+          <EntitySetMapping Name="C__EFMigrationsHistory">
+            <EntityTypeMapping TypeName="dbunimanageModel.C__EFMigrationsHistory">
+              <MappingFragment StoreEntitySet="__EFMigrationsHistory">
+                <ScalarProperty Name="MigrationId" ColumnName="MigrationId" />
+                <ScalarProperty Name="ProductVersion" ColumnName="ProductVersion" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="sysdiagrams">
+            <EntityTypeMapping TypeName="dbunimanageModel.sysdiagram">
+              <MappingFragment StoreEntitySet="sysdiagrams">
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
+                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
+                <ScalarProperty Name="version" ColumnName="version" />
+                <ScalarProperty Name="definition" ColumnName="definition" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblAssignments">
+            <EntityTypeMapping TypeName="dbunimanageModel.tblAssignment">
+              <MappingFragment StoreEntitySet="tblAssignment">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="CourseId" ColumnName="CourseId" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="DeadlineUtc" ColumnName="DeadlineUtc" />
+                <ScalarProperty Name="MaterialFileName" ColumnName="MaterialFileName" />
+                <ScalarProperty Name="MaterialFilePath" ColumnName="MaterialFilePath" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblAssignmentSubmissions">
+            <EntityTypeMapping TypeName="dbunimanageModel.tblAssignmentSubmission">
+              <MappingFragment StoreEntitySet="tblAssignmentSubmission">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="AssignmentId" ColumnName="AssignmentId" />
+                <ScalarProperty Name="StudentId" ColumnName="StudentId" />
+                <ScalarProperty Name="FilePath" ColumnName="FilePath" />
+                <ScalarProperty Name="SubmittedAtUtc" ColumnName="SubmittedAtUtc" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblContactMessages">
+            <EntityTypeMapping TypeName="dbunimanageModel.tblContactMessage">
+              <MappingFragment StoreEntitySet="tblContactMessage">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Message" ColumnName="Message" />
+                <ScalarProperty Name="SubmittedAtUtc" ColumnName="SubmittedAtUtc" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblCourses">
+            <EntityTypeMapping TypeName="dbunimanageModel.tblCourse">
+              <MappingFragment StoreEntitySet="tblCourse">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="ImageUrl" ColumnName="ImageUrl" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="CourseCategoryId" ColumnName="CourseCategoryId" />
+                <ScalarProperty Name="LecturerId" ColumnName="LecturerId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblCourseCategories">
+            <EntityTypeMapping TypeName="dbunimanageModel.tblCourseCategory">
+              <MappingFragment StoreEntitySet="tblCourseCategory">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblCourseMaterials">
+            <EntityTypeMapping TypeName="dbunimanageModel.tblCourseMaterial">
+              <MappingFragment StoreEntitySet="tblCourseMaterial">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="CourseId" ColumnName="CourseId" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="FilePath" ColumnName="FilePath" />
+                <ScalarProperty Name="CreatedAtUtc" ColumnName="CreatedAtUtc" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblEnrollments">
+            <EntityTypeMapping TypeName="dbunimanageModel.tblEnrollment">
+              <MappingFragment StoreEntitySet="tblEnrollment">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="CourseId" ColumnName="CourseId" />
+                <ScalarProperty Name="StudentId" ColumnName="StudentId" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="EnrolledAtUtc" ColumnName="EnrolledAtUtc" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblGrades">
+            <EntityTypeMapping TypeName="dbunimanageModel.tblGrade">
+              <MappingFragment StoreEntitySet="tblGrade">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="AssignmentSubmissionId" ColumnName="AssignmentSubmissionId" />
+                <ScalarProperty Name="Score" ColumnName="Score" />
+                <ScalarProperty Name="Feedback" ColumnName="Feedback" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblMessages">
+            <EntityTypeMapping TypeName="dbunimanageModel.tblMessage">
+              <MappingFragment StoreEntitySet="tblMessage">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="SenderId" ColumnName="SenderId" />
+                <ScalarProperty Name="ReceiverId" ColumnName="ReceiverId" />
+                <ScalarProperty Name="Content" ColumnName="Content" />
+                <ScalarProperty Name="SentAtUtc" ColumnName="SentAtUtc" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblMessageNotifications">
+            <EntityTypeMapping TypeName="dbunimanageModel.tblMessageNotification">
+              <MappingFragment StoreEntitySet="tblMessageNotification">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="MessageId" ColumnName="MessageId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="IsRead" ColumnName="IsRead" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblOtpTokens">
+            <EntityTypeMapping TypeName="dbunimanageModel.tblOtpToken">
+              <MappingFragment StoreEntitySet="tblOtpToken">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Purpose" ColumnName="Purpose" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="ExpiresAtUtc" ColumnName="ExpiresAtUtc" />
+                <ScalarProperty Name="IsUsed" ColumnName="IsUsed" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblPayments">
+            <EntityTypeMapping TypeName="dbunimanageModel.tblPayment">
+              <MappingFragment StoreEntitySet="tblPayment">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="EnrollmentId" ColumnName="EnrollmentId" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="StripeSessionId" ColumnName="StripeSessionId" />
+                <ScalarProperty Name="StripePaymentIntentId" ColumnName="StripePaymentIntentId" />
+                <ScalarProperty Name="PaidAtUtc" ColumnName="PaidAtUtc" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblRoleClaims">
+            <EntityTypeMapping TypeName="dbunimanageModel.tblRoleClaim">
+              <MappingFragment StoreEntitySet="tblRoleClaims">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+                <ScalarProperty Name="ClaimType" ColumnName="ClaimType" />
+                <ScalarProperty Name="ClaimValue" ColumnName="ClaimValue" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblRoles">
+            <EntityTypeMapping TypeName="dbunimanageModel.tblRole">
+              <MappingFragment StoreEntitySet="tblRoles">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="NormalizedName" ColumnName="NormalizedName" />
+                <ScalarProperty Name="ConcurrencyStamp" ColumnName="ConcurrencyStamp" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblSystemUsageLogs">
+            <EntityTypeMapping TypeName="dbunimanageModel.tblSystemUsageLog">
+              <MappingFragment StoreEntitySet="tblSystemUsageLog">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="RoleName" ColumnName="RoleName" />
+                <ScalarProperty Name="ActionType" ColumnName="ActionType" />
+                <ScalarProperty Name="ControllerName" ColumnName="ControllerName" />
+                <ScalarProperty Name="ActionName" ColumnName="ActionName" />
+                <ScalarProperty Name="Path" ColumnName="Path" />
+                <ScalarProperty Name="HttpMethod" ColumnName="HttpMethod" />
+                <ScalarProperty Name="StatusCode" ColumnName="StatusCode" />
+                <ScalarProperty Name="IpAddress" ColumnName="IpAddress" />
+                <ScalarProperty Name="Details" ColumnName="Details" />
+                <ScalarProperty Name="LoggedAtUtc" ColumnName="LoggedAtUtc" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblUserClaims">
+            <EntityTypeMapping TypeName="dbunimanageModel.tblUserClaim">
+              <MappingFragment StoreEntitySet="tblUserClaims">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="ClaimType" ColumnName="ClaimType" />
+                <ScalarProperty Name="ClaimValue" ColumnName="ClaimValue" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblUserLogins">
+            <EntityTypeMapping TypeName="dbunimanageModel.tblUserLogin">
+              <MappingFragment StoreEntitySet="tblUserLogins">
+                <ScalarProperty Name="LoginProvider" ColumnName="LoginProvider" />
+                <ScalarProperty Name="ProviderKey" ColumnName="ProviderKey" />
+                <ScalarProperty Name="ProviderDisplayName" ColumnName="ProviderDisplayName" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblUsers">
+            <EntityTypeMapping TypeName="dbunimanageModel.tblUser">
+              <MappingFragment StoreEntitySet="tblUsers">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="FullName" ColumnName="FullName" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="DateOfBirth" ColumnName="DateOfBirth" />
+                <ScalarProperty Name="Gender" ColumnName="Gender" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="NormalizedUserName" ColumnName="NormalizedUserName" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="NormalizedEmail" ColumnName="NormalizedEmail" />
+                <ScalarProperty Name="EmailConfirmed" ColumnName="EmailConfirmed" />
+                <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />
+                <ScalarProperty Name="SecurityStamp" ColumnName="SecurityStamp" />
+                <ScalarProperty Name="ConcurrencyStamp" ColumnName="ConcurrencyStamp" />
+                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
+                <ScalarProperty Name="PhoneNumberConfirmed" ColumnName="PhoneNumberConfirmed" />
+                <ScalarProperty Name="TwoFactorEnabled" ColumnName="TwoFactorEnabled" />
+                <ScalarProperty Name="LockoutEnd" ColumnName="LockoutEnd" />
+                <ScalarProperty Name="LockoutEnabled" ColumnName="LockoutEnabled" />
+                <ScalarProperty Name="AccessFailedCount" ColumnName="AccessFailedCount" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblUserTokens">
+            <EntityTypeMapping TypeName="dbunimanageModel.tblUserToken">
+              <MappingFragment StoreEntitySet="tblUserTokens">
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="LoginProvider" ColumnName="LoginProvider" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="tblUserRoles" TypeName="dbunimanageModel.tblUserRoles" StoreEntitySet="tblUserRoles">
+            <EndProperty Name="tblRoles">
+              <ScalarProperty Name="Id" ColumnName="RoleId" />
+            </EndProperty>
+            <EndProperty Name="tblUsers">
+              <ScalarProperty Name="Id" ColumnName="UserId" />
+            </EndProperty>
+          </AssociationSetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

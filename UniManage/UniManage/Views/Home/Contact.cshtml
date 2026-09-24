@@ -1,0 +1,46 @@
+@model UniManage.ViewModels.ContactViewModel
+@{
+    ViewBag.Title = "Contact";
+}
+<section class="mb-3">
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0 no-hover-card">
+            <div class="card-body p-4 p-md-5">
+                <h3>Contact Us</h3>
+                @if (TempData["ContactSuccess"] != null)
+                {
+                    <div class="alert alert-success">@TempData["ContactSuccess"]</div>
+                }
+                @if (TempData["ContactError"] != null)
+                {
+                    <div class="alert alert-warning">@TempData["ContactError"]</div>
+                }
+                <form method="post" action="@Url.Action("Contact")">
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(false, "", new { @class = "text-danger mb-2" })
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.Name)
+                        @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.Email)
+                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.Message)
+                        @Html.TextAreaFor(m => m.Message, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.Message, "", new { @class = "text-danger" })
+                    </div>
+                    <button class="btn btn-primary">Send</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+@section Scripts {
+    @Html.Partial("_ValidationScriptsPartial")
+}

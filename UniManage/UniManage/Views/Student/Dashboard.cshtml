@@ -1,0 +1,46 @@
+@{
+    ViewBag.Title = "Student Dashboard";
+}
+<div class="dashboard-intro dashboard-intro-student mb-3">
+    <div>
+        <p class="dashboard-kicker mb-1">Student Portal</p>
+        <h4 class="mb-1">Track your academic progress</h4>
+        <p class="mb-0">Check your courses, assignments, and communication updates quickly.</p>
+    </div>
+    <i class="bi bi-mortarboard-fill dashboard-intro-icon"></i>
+</div>
+<div class="row g-3">
+    <div class="col-md-4">
+        <a href="@Url.Action("MyCourses", "Student")" class="text-decoration-none">
+        <div class="card shadow-sm stat-card stat-card-student">
+            <div class="card-body">
+                <div class="stat-icon"><i class="bi bi-mortarboard-fill"></i></div>
+                <p class="stat-label mb-1">My Enrollments</p>
+                <h3 class="stat-value mb-0">@ViewBag.Enrollments</h3>
+            </div>
+        </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="@Url.Action("Messages", "Student")" class="text-decoration-none">
+        <div class="card shadow-sm stat-card stat-card-student">
+            <div class="card-body">
+                <div class="stat-icon"><i class="bi bi-chat-dots-fill"></i></div>
+                <p class="stat-label mb-1">Unread Messages</p>
+                <h3 class="stat-value mb-0">@ViewBag.UnreadMessages</h3>
+            </div>
+        </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="@Url.Action("Assignments", "Student")" class="text-decoration-none">
+        <div class="card shadow-sm stat-card stat-card-student">
+            <div class="card-body">
+                <div class="stat-icon"><i class="bi bi-file-earmark-check-fill"></i></div>
+                <p class="stat-label mb-1">Submitted Assignments</p>
+                <h3 class="stat-value mb-0">@ViewBag.Assignments</h3>
+            </div>
+        </div>
+        </a>
+    </div>
+</div>

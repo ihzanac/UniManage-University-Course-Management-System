@@ -1,0 +1,35 @@
+@{
+    ViewBag.Title = "Select Login";
+}
+<section class="hero-section p-4 p-md-5 mb-5">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold mb-2">Choose Your Portal</h2>
+        <p class="text-secondary mb-0">Select your role to continue with a personalized dashboard experience.</p>
+    </div>
+    <div class="row g-3">
+        <div class="col-md-4">
+            <a class="card p-4 text-decoration-none h-100 role-card" href="@Url.Action("Login", new { role = "Student" })">
+                <div class="role-icon role-icon-student mb-3">S</div>
+                <h4 class="fw-bold text-primary">Student</h4>
+                <p class="text-secondary mb-0">Access enrolled courses, assignments, grades, and lecturer messages.</p>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a class="card p-4 text-decoration-none h-100 role-card" href="@Url.Action("Login", new { role = "Lecturer" })">
+                <div class="role-icon role-icon-lecturer mb-3">L</div>
+                <h4 class="fw-bold text-success">Lecturer</h4>
+                <p class="text-secondary mb-0">Manage assignments, submissions, grading, and student communication.</p>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a class="card p-4 text-decoration-none h-100 role-card" href="@Url.Action("Login", new { role = "Administrator" })">
+                <div class="role-icon role-icon-admin mb-3">A</div>
+                <h4 class="fw-bold text-danger">Administrator</h4>
+                <p class="text-secondary mb-0">Manage users, courses, payments, and system-level reporting.</p>
+            </a>
+        </div>
+    </div>
+</section>
+<div class="text-center pb-4">
+    <a class="btn btn-primary px-4" href="@Url.Action("Register")">New Student? Create Account</a>
+</div>

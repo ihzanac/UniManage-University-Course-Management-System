@@ -1,0 +1,247 @@
+@model UniManage.ViewModels.AdminReportsViewModel
+@{
+    ViewBag.Title = "Admin Reports";
+}
+
+<div class="mb-3">
+    <h5 class="fw-semibold mb-1">Reports Center</h5>
+    <p class="text-secondary mb-0">Choose a report type to view the specific table.</p>
+</div>
+
+<div class="d-flex justify-content-start mb-3">
+    <div class="d-flex flex-wrap gap-2 align-items-end">
+        <div style="min-width: 280px;">
+            <label class="form-label fw-semibold">Select Report</label>
+            <select id="reportTypeFilter" class="form-select">
+                <option value="">No report selected</option>
+                <option value="course-popularity">Course Popularity</option>
+                <option value="student-performance">Student Performance Report</option>
+                <option value="payment-report">Payment Report</option>
+                <option value="enrollment-statistics">Enrollment Statistics</option>
+            </select>
+        </div>
+        <div class="d-flex gap-2">
+            <a id="btnExportSelectedReport"
+               class="btn btn-outline-primary disabled"
+               aria-disabled="true"
+               href="#">
+                <i class="bi bi-file-earmark-pdf-fill me-1"></i>Export PDF
+            </a>
+            <a class="btn btn-primary"
+              
+               href="@Url.Action("ExportReportPdf", new { reportType = "all-reports" })">
+                <i class="bi bi-file-earmark-pdf-fill me-1"></i>Export All Reports PDF
+            </a>
+        </div>
+    </div>
+</div>
+
+<section class="report-section mb-4" data-report-type="course-popularity">
+    <div class="d-flex justify-content-between align-items-center mb-3 gap-2 flex-wrap">
+        <h5 class="fw-semibold mb-0"><i class="bi bi-stars me-2 text-primary"></i>Course Popularity</h5>
+        <a class="btn btn-sm btn-outline-primary" href="@Url.Action("ExportReportPdf", new { reportType = "course-popularity" })">
+            <i class="bi bi-file-earmark-pdf-fill me-1"></i>Export PDF
+        </a>
+    </div>
+    @if (!Model.TopCourses.Any())
+    {
+        <p class="text-secondary mb-0">No enrollment data available yet.</p>
+    }
+    else
+    {
+        <div class="table-responsive admin-users-table-wrap">
+            <table class="table admin-users-table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Course</th>
+                        <th class="text-end">Enrollments</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.TopCourses)
+                    {
+                        <tr>
+                            <td>@item.CourseTitle</td>
+                            <td class="text-end fw-semibold">@item.EnrollmentCount</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>
+
+<section class="report-section mb-4" data-report-type="student-performance">
+    <div class="d-flex justify-content-between align-items-center mb-3 gap-2 flex-wrap">
+        <h5 class="fw-semibold mb-0"><i class="bi bi-mortarboard-fill me-2 text-primary"></i>Student Performance Report</h5>
+        <a class="btn btn-sm btn-outline-primary" href="@Url.Action("ExportReportPdf", new { reportType = "student-performance" })">
+            <i class="bi bi-file-earmark-pdf-fill me-1"></i>Export PDF
+        </a>
+    </div>
+    @if (!Model.StudentPerformance.Any())
+    {
+        <p class="text-secondary mb-0">No graded submission data available yet.</p>
+    }
+    else
+    {
+        <div class="table-responsive admin-users-table-wrap">
+            <table class="table admin-users-table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th class="text-end">Graded Submissions</th>
+                        <th class="text-end">Average Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.StudentPerformance)
+                    {
+                        <tr>
+                            <td>
+                                <div class="fw-semibold">@item.StudentName</div>
+                                <div class="small text-secondary">@item.StudentEmail</div>
+                            </td>
+                            <td class="text-end fw-semibold">@item.GradedSubmissions</td>
+                            <td class="text-end fw-semibold">@item.AverageScore.ToString("N2")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>
+
+<section class="report-section mb-4" data-report-type="payment-report">
+    <div class="d-flex justify-content-between align-items-center mb-3 gap-2 flex-wrap">
+        <h5 class="fw-semibold mb-0"><i class="bi bi-cash-stack me-2 text-primary"></i>Payment Report (Last 6 Months)</h5>
+        <a class="btn btn-sm btn-outline-primary" href="@Url.Action("ExportReportPdf", new { reportType = "payment-report" })">
+            <i class="bi bi-file-earmark-pdf-fill me-1"></i>Export PDF
+        </a>
+    </div>
+    @if (!Model.MonthlyPayments.Any())
+    {
+        <p class="text-secondary mb-0">No paid transactions found in recent months.</p>
+    }
+    else
+    {
+        <div class="table-responsive admin-users-table-wrap mb-3">
+            <table class="table admin-users-table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th class="text-end">Revenue</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var month in Model.MonthlyPayments)
+                    {
+                        <tr>
+                            <td>@month.MonthLabel</td>
+                            <td class="text-end fw-semibold">LKR @month.Revenue.ToString("N2")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <h6 class="fw-semibold mb-3"><i class="bi bi-credit-card-fill me-2 text-primary"></i>Payment Report by Status</h6>
+    @if (!Model.PaymentStatusSummary.Any())
+    {
+        <p class="text-secondary mb-0">No payment data available.</p>
+    }
+    else
+    {
+        <div class="table-responsive admin-users-table-wrap">
+            <table class="table admin-users-table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th class="text-end">Count</th>
+                        <th class="text-end">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.PaymentStatusSummary)
+                    {
+                        <tr>
+                            <td>@item.Status</td>
+                            <td class="text-end fw-semibold">@item.Count</td>
+                            <td class="text-end fw-semibold">LKR @item.Amount.ToString("N2")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>
+
+<section class="report-section mb-4" data-report-type="enrollment-statistics">
+    <div class="d-flex justify-content-between align-items-center mb-3 gap-2 flex-wrap">
+        <h5 class="fw-semibold mb-0"><i class="bi bi-bar-chart-steps me-2 text-primary"></i>Enrollment Statistics</h5>
+        <a class="btn btn-sm btn-outline-primary" href="@Url.Action("ExportReportPdf", new { reportType = "enrollment-statistics" })">
+            <i class="bi bi-file-earmark-pdf-fill me-1"></i>Export PDF
+        </a>
+    </div>
+    @if (!Model.EnrollmentStatusSummary.Any())
+    {
+        <p class="text-secondary mb-0">No enrollment data available.</p>
+    }
+    else
+    {
+        <div class="table-responsive admin-users-table-wrap">
+            <table class="table admin-users-table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th class="text-end">Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.EnrollmentStatusSummary)
+                    {
+                        <tr>
+                            <td>@item.Status</td>
+                            <td class="text-end fw-semibold">@item.Count</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>
+
+@section Scripts {
+    <script>
+        (function () {
+            const filter = document.getElementById("reportTypeFilter");
+            const exportSelectedBtn = document.getElementById("btnExportSelectedReport");
+            const sections = document.querySelectorAll(".report-section");
+            if (!filter || sections.length === 0) return;
+
+            function applyFilter() {
+                const selected = filter.value;
+                sections.forEach(section => {
+                    const type = section.getAttribute("data-report-type");
+                    section.style.display = selected && selected === type ? "" : "none";
+                });
+
+                if (exportSelectedBtn) {
+                    if (selected) {
+                        exportSelectedBtn.href = '@Url.Action("ExportReportPdf", "Admin")' + '?reportType=' + encodeURIComponent(selected);
+                        exportSelectedBtn.classList.remove("disabled");
+                        exportSelectedBtn.removeAttribute("aria-disabled");
+                    } else {
+                        exportSelectedBtn.href = "#";
+                        exportSelectedBtn.classList.add("disabled");
+                        exportSelectedBtn.setAttribute("aria-disabled", "true");
+                    }
+                }
+            }
+
+            filter.addEventListener("change", applyFilter);
+            filter.value = "";
+            applyFilter();
+        })();
+    </script>
+}

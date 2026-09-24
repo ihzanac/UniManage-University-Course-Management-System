@@ -1,0 +1,314 @@
+@model IEnumerable<UniManage.Models.Course>
+@{
+    ViewBag.Title = "Manage Courses";
+    var categories = (ViewBag.Categories as IEnumerable<UniManage.Models.CourseCategory> ?? Enumerable.Empty<UniManage.Models.CourseCategory>()).ToList();
+    var lecturers = (ViewBag.Lecturers as IEnumerable<UniManage.Models.ApplicationUser> ?? Enumerable.Empty<UniManage.Models.ApplicationUser>()).ToList();
+    var courses = Model.ToList();
+    var searchTerm = (ViewBag.SearchTerm as string) ?? string.Empty;
+}
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h5 class="fw-semibold mb-0">Course List</h5>
+    <span class="total-users-pill">Total Courses: @courses.Count</span>
+</div>
+<div class="d-flex gap-2 mb-3 flex-wrap">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCourseModal">
+        <i class="bi bi-plus-circle me-1"></i>Add
+    </button>
+    <button id="btnOpenCourseUpdate" type="button" class="btn btn-warning text-white" disabled data-bs-toggle="modal" data-bs-target="#updateCourseModal">
+        <i class="bi bi-pencil-square me-1"></i>Update
+    </button>
+    <button id="btnOpenCourseDelete" type="button" class="btn btn-danger" disabled data-bs-toggle="modal" data-bs-target="#deleteCourseModal">
+        <i class="bi bi-trash-fill me-1"></i>Delete
+    </button>
+</div>
+<form method="get" class="d-flex gap-2 mb-3 flex-wrap">
+    <input type="text" name="search" value="@searchTerm" class="form-control" style="max-width: 360px;" placeholder="Search by title, category, lecturer" />
+    <button type="submit" class="btn btn-primary"><i class="bi bi-search me-1"></i>Search</button>
+    <a class="btn btn-outline-secondary" href="@Url.Action("Courses")">Clear</a>
+</form>
+
+@if (!courses.Any())
+{
+    <p class="text-secondary mb-0">No courses available yet.</p>
+}
+else
+{
+    <div class="table-responsive admin-users-table-wrap">
+        <table class="table admin-users-table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Lecturer</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var c in courses)
+                {
+                    <tr class="user-selectable-row"
+                        data-course-id="@c.Id"
+                        data-title="@c.Title"
+                        data-description="@c.Description"
+                        data-price="@c.Price"
+                        data-category-id="@c.CourseCategoryId"
+                        data-lecturer-id="@c.LecturerId"
+                        data-image-url="@c.ImageUrl">
+                        <td>
+                            <button type="button"
+                                    class="admin-course-thumb-trigger"
+                                    data-image-src="@c.ImageUrl"
+                                    data-image-title="@c.Title"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#courseImagePreviewModal">
+                                <div class="admin-course-thumb-frame">
+                                    <img src="@c.ImageUrl" alt="@c.Title" class="admin-course-thumb" />
+                                </div>
+                            </button>
+                        </td>
+                        <td class="fw-semibold">@c.Title</td>
+                        <td>@(c.CourseCategory != null ? c.CourseCategory.Name : "N/A")</td>
+                        <td>@(c.Lecturer != null ? c.Lecturer.FullName : "N/A")</td>
+                        <td>LKR @c.Price</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<div class="modal fade" id="addCourseModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Course</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" enctype="multipart/form-data" id="addCourseForm" action="@Url.Action("CreateCourse")">
+                    @Html.AntiForgeryToken()
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <label class="form-label">Title</label>
+                            <input name="Title" class="form-control" required maxlength="180" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Price</label>
+                            <input name="Price" type="number" step="0.01" class="form-control" required />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Category</label>
+                            <select name="CourseCategoryId" class="form-select" required>
+                                <option value="">Select</option>
+                                @foreach (var c in categories)
+                                {
+                                    <option value="@c.Id">@c.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Lecturer</label>
+                            <select name="LecturerId" class="form-select" required>
+                                <option value="">Select</option>
+                                @foreach (var l in lecturers)
+                                {
+                                    <option value="@l.Id">@l.FullName (@l.Email)</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Course Image</label>
+                            <input name="ImageFile" type="file" class="form-control" accept=".jpg,.jpeg,.png,.webp" required />
+                            <small class="text-secondary">JPG, PNG, WEBP (max 5MB)</small>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label">Description</label>
+                            <textarea name="Description" class="form-control" required></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" form="addCourseForm" class="btn btn-primary">Add Course</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="updateCourseModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Course</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" enctype="multipart/form-data" id="updateCourseForm" action="@Url.Action("UpdateCourse")">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="Id" id="updateCourseId" />
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <label class="form-label">Title</label>
+                            <input name="Title" id="updateCourseTitle" class="form-control" required maxlength="180" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Price</label>
+                            <input name="Price" id="updateCoursePrice" type="number" step="0.01" class="form-control" required />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Category</label>
+                            <select name="CourseCategoryId" id="updateCourseCategoryId" class="form-select" required>
+                                @foreach (var c in categories)
+                                {
+                                    <option value="@c.Id">@c.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Lecturer</label>
+                            <select name="LecturerId" id="updateCourseLecturerId" class="form-select" required>
+                                @foreach (var l in lecturers)
+                                {
+                                    <option value="@l.Id">@l.FullName (@l.Email)</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Replace Image (optional)</label>
+                            <input name="ImageFile" id="updateCourseImageFile" type="file" class="form-control" accept=".jpg,.jpeg,.png,.webp" />
+                            <small class="text-secondary">Leave empty to keep current image</small>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label">Description</label>
+                            <textarea name="Description" id="updateCourseDescription" class="form-control" required></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" form="updateCourseForm" class="btn btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteCourseModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Course</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-2">Are you sure you want to delete this course?</p>
+                <p class="mb-0 text-secondary small" id="deleteCourseLabel"></p>
+                <form method="post" id="deleteCourseForm" class="d-none" action="@Url.Action("DeleteCourse")">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" id="deleteCourseId" />
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" form="deleteCourseForm" class="btn btn-danger">Delete Course</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="courseImagePreviewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header">
+                <h5 class="modal-title" id="courseImagePreviewTitle">Course Image</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="courseImagePreviewElement" src="" alt="Course image preview" class="img-fluid rounded" style="max-height: 72vh; object-fit: contain;" />
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            const rows = document.querySelectorAll(".user-selectable-row");
+            const btnUpdate = document.getElementById("btnOpenCourseUpdate");
+            const btnDelete = document.getElementById("btnOpenCourseDelete");
+            const updateCourseId = document.getElementById("updateCourseId");
+            const updateCourseTitle = document.getElementById("updateCourseTitle");
+            const updateCourseDescription = document.getElementById("updateCourseDescription");
+            const updateCoursePrice = document.getElementById("updateCoursePrice");
+            const updateCourseCategoryId = document.getElementById("updateCourseCategoryId");
+            const updateCourseLecturerId = document.getElementById("updateCourseLecturerId");
+            const deleteCourseId = document.getElementById("deleteCourseId");
+            const deleteCourseLabel = document.getElementById("deleteCourseLabel");
+            const imagePreviewButtons = document.querySelectorAll(".admin-course-thumb-trigger");
+            const previewImage = document.getElementById("courseImagePreviewElement");
+            const previewTitle = document.getElementById("courseImagePreviewTitle");
+
+            let selected = null;
+
+            function clearSelection() {
+                rows.forEach(r => r.classList.remove("active"));
+                selected = null;
+                btnUpdate.disabled = true;
+                btnDelete.disabled = true;
+            }
+
+            function selectRow(row) {
+                rows.forEach(r => r.classList.remove("active"));
+                row.classList.add("active");
+                selected = {
+                    id: row.dataset.courseId,
+                    title: row.dataset.title || "",
+                    description: row.dataset.description || "",
+                    price: row.dataset.price || "0",
+                    categoryId: row.dataset.categoryId || "",
+                    lecturerId: row.dataset.lecturerId || ""
+                };
+                btnUpdate.disabled = false;
+                btnDelete.disabled = false;
+            }
+
+            rows.forEach(row => {
+                row.addEventListener("click", function () {
+                    if (selected && selected.id === row.dataset.courseId) {
+                        clearSelection();
+                        return;
+                    }
+                    selectRow(row);
+                });
+            });
+
+            btnUpdate.addEventListener("click", function () {
+                if (!selected) return;
+                updateCourseId.value = selected.id;
+                updateCourseTitle.value = selected.title;
+                updateCourseDescription.value = selected.description;
+                updateCoursePrice.value = selected.price;
+                updateCourseCategoryId.value = selected.categoryId;
+                updateCourseLecturerId.value = selected.lecturerId;
+            });
+
+            btnDelete.addEventListener("click", function () {
+                if (!selected) return;
+                deleteCourseId.value = selected.id;
+                deleteCourseLabel.textContent = selected.title;
+            });
+
+            imagePreviewButtons.forEach(btn => {
+                btn.addEventListener("click", function () {
+                    const imageSrc = btn.getAttribute("data-image-src") || "";
+                    const imageTitle = btn.getAttribute("data-image-title") || "Course Image";
+                    previewImage.src = imageSrc;
+                    previewImage.alt = imageTitle;
+                    previewTitle.textContent = imageTitle;
+                });
+            });
+        })();
+    </script>
+}

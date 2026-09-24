@@ -1,0 +1,102 @@
+@model UniManage.ViewModels.StudentGradesPageViewModel
+@{
+    ViewBag.Title = "Grades";
+    var grades = Model.Grades.ToList();
+    var avgScore = grades.Any() ? grades.Average(x => x.Score) : 0;
+}
+
+<style>
+    .grade-score-badge {
+        min-width: 92px;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 12px;
+        padding: .42rem .75rem;
+        font-weight: 800;
+        letter-spacing: .2px;
+        color: #fff;
+    }
+
+    .grade-score-good {
+        background: linear-gradient(135deg, #16a34a, #22c55e);
+    }
+
+    .grade-score-mid {
+        background: linear-gradient(135deg, #d97706, #f59e0b);
+    }
+
+    .grade-score-low {
+        background: linear-gradient(135deg, #dc2626, #ef4444);
+    }
+
+    .grade-progress {
+        height: 8px;
+        border-radius: 999px;
+        background: #e2e8f0;
+        overflow: hidden;
+        margin-top: .45rem;
+    }
+
+    .grade-progress-fill {
+        height: 100%;
+        border-radius: 999px;
+    }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h5 class="fw-semibold mb-0">My Grades</h5>
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+        <span class="total-users-pill">Total Graded: @grades.Count</span>
+        <span class="badge rounded-pill px-3 py-2 bg-primary text-white">Average: @avgScore.ToString("0.##") / 100</span>
+    </div>
+</div>
+
+@if (!grades.Any())
+{
+    <div class="admin-users-table-wrap p-4 text-center">
+        <div class="text-secondary mb-2"><i class="bi bi-award fs-3"></i></div>
+        <h6 class="fw-semibold mb-1">No grades available yet</h6>
+        <p class="text-secondary mb-0">Your assignment grades will appear here once lecturers evaluate submissions.</p>
+    </div>
+}
+else
+{
+    <div class="admin-users-table-wrap">
+        <div class="table-responsive">
+            <table class="table admin-users-table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Course</th>
+                        <th>Assignment</th>
+                        <th style="min-width: 220px;">Marks</th>
+                        <th>Feedback</th>
+                        <th>Submitted At (UTC)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var grade in grades)
+                    {
+                        var scoreClass = grade.Score >= 75 ? "grade-score-good" : grade.Score >= 50 ? "grade-score-mid" : "grade-score-low";
+                        var progressClass = grade.Score >= 75 ? "bg-success" : grade.Score >= 50 ? "bg-warning" : "bg-danger";
+                        var progressWidth = grade.Score < 0 ? 0 : grade.Score > 100 ? 100 : grade.Score;
+                        <tr class="user-selectable-row">
+                            <td>@grade.CourseTitle</td>
+                            <td>@grade.AssignmentTitle</td>
+                            <td>
+                                <span class="grade-score-badge @scoreClass">
+                                    @grade.Score.ToString("0.##") / 100
+                                </span>
+                                <div class="grade-progress">
+                                    <div class="grade-progress-fill @progressClass" style="width:@progressWidth%"></div>
+                                </div>
+                            </td>
+                            <td class="text-secondary">@(string.IsNullOrWhiteSpace(grade.Feedback) ? "No feedback provided." : grade.Feedback)</td>
+                            <td>@grade.SubmittedAtUtc.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

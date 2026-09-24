@@ -1,0 +1,282 @@
+@model UniManage.ViewModels.AdminUsersPageViewModel
+@{
+    ViewBag.Title = "Manage Users";
+    var users = Model.Users;
+    var searchTerm = (ViewBag.SearchTerm as string) ?? string.Empty;
+    string[] roleOptions = { "Student", "Lecturer", "Administrator" };
+    string[] genderOptions = { "Male", "Female", "Prefer not to say" };
+}
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h5 class="fw-semibold mb-0">Registered Users</h5>
+    <span class="total-users-pill">Total Users: @users.Count</span>
+</div>
+<div class="d-flex gap-2 mb-3 flex-wrap">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+        <i class="bi bi-person-plus-fill me-1"></i>Add
+    </button>
+    <button id="btnOpenUpdate" type="button" class="btn btn-warning text-white" disabled data-bs-toggle="modal" data-bs-target="#updateUserModal">
+        <i class="bi bi-pencil-square me-1"></i>Update
+    </button>
+    <button id="btnOpenDelete" type="button" class="btn btn-danger" disabled data-bs-toggle="modal" data-bs-target="#deleteUserModal">
+        <i class="bi bi-trash-fill me-1"></i>Delete
+    </button>
+</div>
+<form method="get" class="d-flex gap-2 mb-3 flex-wrap">
+    <input type="text" name="search" value="@searchTerm" class="form-control" style="max-width: 360px;" placeholder="Search by name, email, or gender" />
+    <button type="submit" class="btn btn-primary"><i class="bi bi-search me-1"></i>Search</button>
+    <a class="btn btn-outline-secondary" href="@Url.Action("Users")">Clear</a>
+</form>
+@if (!users.Any())
+{
+    <p class="text-secondary mb-0">No users found in the system yet.</p>
+}
+else
+{
+    <div class="table-responsive admin-users-table-wrap">
+                <table class="table admin-users-table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Gender</th>
+                            <th>Date of Birth</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in users)
+                        {
+                            <tr class="user-selectable-row"
+                                data-user-id="@user.Id"
+                                data-full-name="@user.FullName"
+                                data-email="@user.Email"
+                                data-gender="@user.Gender"
+                                data-dob="@(user.DateOfBirth.HasValue ? user.DateOfBirth.Value.ToString("yyyy-MM-dd") : string.Empty)"
+                                data-role="@user.RoleName"
+                                data-is-current-user="@user.IsCurrentUser.ToString().ToLowerInvariant()">
+                                <td>
+                                    <div class="fw-semibold">@user.FullName
+                                        @if (user.IsCurrentUser)
+                                        {
+                                            <span class="account-pill ms-2">Your account</span>
+                                        }
+                                    </div>
+                                </td>
+                                <td>@user.Email</td>
+                                <td>@user.RoleName</td>
+                                <td>@user.Gender</td>
+                                <td>@(user.DateOfBirth.HasValue ? user.DateOfBirth.Value.ToString("yyyy-MM-dd") : "-")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+    </div>
+}
+
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" id="addUserForm" action="@Url.Action("CreateUser")">
+                    @Html.AntiForgeryToken()
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <label class="form-label">Full Name</label>
+                            <input name="FullName" class="form-control" required maxlength="120" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email</label>
+                            <input name="Email" type="email" class="form-control" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Password</label>
+                            <input name="Password" type="password" class="form-control" required />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Gender</label>
+                            <select name="Gender" class="form-select" required>
+                                @foreach (var gender in genderOptions)
+                                {
+                                    <option value="@gender">@gender</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Date of Birth</label>
+                            <input name="DateOfBirth" type="date" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Role</label>
+                            <select name="RoleName" class="form-select" required>
+                                @foreach (var role in roleOptions)
+                                {
+                                    <option value="@role">@role</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" form="addUserForm" class="btn btn-primary">Add User</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="updateUserModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header">
+                <h5 class="modal-title">Update User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" id="updateUserForm" action="@Url.Action("UpdateUser")">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="Id" id="updateUserId" />
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <label class="form-label">Full Name</label>
+                            <input name="FullName" id="updateFullName" class="form-control" required maxlength="120" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email</label>
+                            <input name="Email" id="updateEmail" type="email" class="form-control" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Gender</label>
+                            <select name="Gender" id="updateGender" class="form-select" required>
+                                @foreach (var gender in genderOptions)
+                                {
+                                    <option value="@gender">@gender</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Date of Birth</label>
+                            <input name="DateOfBirth" id="updateDob" type="date" class="form-control" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Role</label>
+                            <select name="RoleName" id="updateRole" class="form-select" required>
+                                @foreach (var role in roleOptions)
+                                {
+                                    <option value="@role">@role</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" form="updateUserForm" class="btn btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteUserModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-2">Are you sure you want to delete this user?</p>
+                <p class="mb-0 text-secondary small" id="deleteUserLabel"></p>
+                <form method="post" id="deleteUserForm" class="d-none" action="@Url.Action("DeleteUser")">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" id="deleteUserId" />
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" form="deleteUserForm" class="btn btn-danger">Delete User</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            const rows = document.querySelectorAll(".user-selectable-row");
+            const btnUpdate = document.getElementById("btnOpenUpdate");
+            const btnDelete = document.getElementById("btnOpenDelete");
+            const updateUserId = document.getElementById("updateUserId");
+            const updateFullName = document.getElementById("updateFullName");
+            const updateEmail = document.getElementById("updateEmail");
+            const updateGender = document.getElementById("updateGender");
+            const updateDob = document.getElementById("updateDob");
+            const updateRole = document.getElementById("updateRole");
+            const deleteUserId = document.getElementById("deleteUserId");
+            const deleteUserLabel = document.getElementById("deleteUserLabel");
+
+            let selected = null;
+
+            function clearSelection() {
+                rows.forEach(r => r.classList.remove("active"));
+                selected = null;
+                btnUpdate.disabled = true;
+                btnDelete.disabled = true;
+            }
+
+            function selectRow(row) {
+                rows.forEach(r => r.classList.remove("active"));
+                row.classList.add("active");
+                selected = {
+                    id: row.dataset.userId,
+                    fullName: row.dataset.fullName || "",
+                    email: row.dataset.email || "",
+                    gender: row.dataset.gender || "",
+                    dob: row.dataset.dob || "",
+                    role: row.dataset.role || "Student",
+                    isCurrentUser: row.dataset.isCurrentUser === "true"
+                };
+                btnUpdate.disabled = false;
+                btnDelete.disabled = selected.isCurrentUser;
+            }
+
+            rows.forEach(row => {
+                row.addEventListener("click", function () {
+                    if (selected && selected.id === row.dataset.userId) {
+                        clearSelection();
+                        return;
+                    }
+                    selectRow(row);
+                });
+            });
+
+            btnUpdate.addEventListener("click", function () {
+                if (!selected) return;
+                updateUserId.value = selected.id;
+                updateFullName.value = selected.fullName;
+                updateEmail.value = selected.email;
+                const normalizedGender = (selected.gender || "").toLowerCase();
+                if (normalizedGender === "male") {
+                    updateGender.value = "Male";
+                } else if (normalizedGender === "female") {
+                    updateGender.value = "Female";
+                } else {
+                    updateGender.value = "Prefer not to say";
+                }
+                updateDob.value = selected.dob;
+                updateRole.value = selected.role;
+            });
+
+            btnDelete.addEventListener("click", function () {
+                if (!selected || selected.isCurrentUser) return;
+                deleteUserId.value = selected.id;
+                deleteUserLabel.textContent = selected.fullName + " (" + selected.email + ")";
+            });
+        })();
+    </script>
+}

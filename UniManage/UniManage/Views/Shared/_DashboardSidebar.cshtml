@@ -1,0 +1,110 @@
+@{
+    var controllerValue = ViewContext.RouteData.Values["controller"];
+    var actionValue = ViewContext.RouteData.Values["action"];
+    var currentController = controllerValue != null ? controllerValue.ToString() : string.Empty;
+    var currentAction = actionValue != null ? actionValue.ToString() : string.Empty;
+    var identityName = User.Identity != null ? User.Identity.Name : string.Empty;
+    var userName = !string.IsNullOrWhiteSpace(identityName) ? identityName : "User";
+    var userInitial = !string.IsNullOrWhiteSpace(userName) ? char.ToUpperInvariant(userName[0]) : 'U';
+    var userRole = User.IsInRole("Administrator") ? "Administrator" : User.IsInRole("Lecturer") ? "Lecturer" : "Student";
+
+    string ActiveClass(string controller, string action = null)
+    {
+        var controllerMatch = string.Equals(currentController, controller, StringComparison.OrdinalIgnoreCase);
+        var actionMatch = action == null || string.Equals(currentAction, action, StringComparison.OrdinalIgnoreCase);
+        return controllerMatch && actionMatch ? "active" : string.Empty;
+    }
+}
+
+<aside class="dashboard-sidebar">
+    <a class="dashboard-brand" href="@Url.Action("Index", "Home")">
+        <span class="brand-dot"></span>
+        <span>UniManage</span>
+    </a>
+
+    <div class="dashboard-user-card">
+        <div class="dashboard-user-avatar">
+            @userInitial
+        </div>
+        <div>
+            <p class="dashboard-user-welcome mb-0">Welcome</p>
+            <h6 class="dashboard-user-name mb-1">@userName</h6>
+            <span class="dashboard-role-chip">@userRole</span>
+        </div>
+    </div>
+
+    <nav class="dashboard-nav">
+        @if (User.IsInRole("Administrator"))
+        {
+            <a class="dashboard-nav-link @ActiveClass("Admin", "Dashboard")" href="@Url.Action("Dashboard", "Admin")">
+                <i class="bi bi-speedometer2"></i><span>Dashboard</span>
+            </a>
+            <a class="dashboard-nav-link @ActiveClass("Admin", "Courses")" href="@Url.Action("Courses", "Admin")">
+                <i class="bi bi-journal-bookmark-fill"></i><span>Courses</span>
+            </a>
+            <a class="dashboard-nav-link @ActiveClass("Admin", "Categories")" href="@Url.Action("Categories", "Admin")">
+                <i class="bi bi-tags-fill"></i><span>Categories</span>
+            </a>
+            <a class="dashboard-nav-link @ActiveClass("Admin", "Payments")" href="@Url.Action("Payments", "Admin")">
+                <i class="bi bi-credit-card-2-front-fill"></i><span>Payments</span>
+            </a>
+            <a class="dashboard-nav-link @ActiveClass("Admin", "Users")" href="@Url.Action("Users", "Admin")">
+                <i class="bi bi-people-fill"></i><span>Users</span>
+            </a>
+            <a class="dashboard-nav-link @ActiveClass("Admin", "Reports")" href="@Url.Action("Reports", "Admin")">
+                <i class="bi bi-bar-chart-line-fill"></i><span>Reports</span>
+            </a>
+            <a class="dashboard-nav-link @ActiveClass("Admin", "EnrollmentStatistics")" href="@Url.Action("EnrollmentStatistics", "Admin")">
+                <i class="bi bi-graph-up"></i><span>Enrollment Statistics</span>
+            </a>
+            <a class="dashboard-nav-link @ActiveClass("Admin", "SystemUsage")" href="@Url.Action("SystemUsage", "Admin")">
+                <i class="bi bi-activity"></i><span>System Usage</span>
+            </a>
+        }
+        else if (User.IsInRole("Lecturer"))
+        {
+            <a class="dashboard-nav-link @ActiveClass("Lecturer", "Dashboard")" href="@Url.Action("Dashboard", "Lecturer")">
+                <i class="bi bi-speedometer2"></i><span>Dashboard</span>
+            </a>
+            <a class="dashboard-nav-link @ActiveClass("Lecturer", "Courses")" href="@Url.Action("Courses", "Lecturer")">
+                <i class="bi bi-journal-richtext"></i><span>My Courses</span>
+            </a>
+            <a class="dashboard-nav-link @ActiveClass("Lecturer", "Assignments")" href="@Url.Action("Assignments", "Lecturer")">
+                <i class="bi bi-list-check"></i><span>Assignments</span>
+            </a>
+            <a class="dashboard-nav-link @ActiveClass("Lecturer", "Reports")" href="@Url.Action("Reports", "Lecturer")">
+                <i class="bi bi-bar-chart-line-fill"></i><span>Reports</span>
+            </a>
+            <a class="dashboard-nav-link @ActiveClass("Lecturer", "Messages")" href="@Url.Action("Messages", "Lecturer")">
+                <i class="bi bi-chat-dots-fill"></i><span>Messages</span>
+            </a>
+        }
+        else
+        {
+            <a class="dashboard-nav-link @ActiveClass("Student", "Dashboard")" href="@Url.Action("Dashboard", "Student")">
+                <i class="bi bi-speedometer2"></i><span>Dashboard</span>
+            </a>
+            <a class="dashboard-nav-link @ActiveClass("Student", "MyCourses")" href="@Url.Action("MyCourses", "Student")">
+                <i class="bi bi-mortarboard-fill"></i><span>My Courses</span>
+            </a>
+            <a class="dashboard-nav-link @ActiveClass("Student", "Assignments")" href="@Url.Action("Assignments", "Student")">
+                <i class="bi bi-file-earmark-check-fill"></i><span>Assignments</span>
+            </a>
+            <a class="dashboard-nav-link @ActiveClass("Student", "Grades")" href="@Url.Action("Grades", "Student")">
+                <i class="bi bi-award-fill"></i><span>Grades</span>
+            </a>
+            <a class="dashboard-nav-link @ActiveClass("Student", "Messages")" href="@Url.Action("Messages", "Student")">
+                <i class="bi bi-chat-dots-fill"></i><span>Messages</span>
+            </a>
+        }
+    </nav>
+
+    <div class="dashboard-sidebar-bottom">
+        <form method="post" action="@Url.Action("Logout", "Account")">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-outline-light w-100">
+                <i class="bi bi-box-arrow-right me-2"></i>Logout
+            </button>
+        </form>
+    </div>
+</aside>

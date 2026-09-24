@@ -1,0 +1,175 @@
+@using System.Collections.Generic
+@using System.Data.Entity
+@using Microsoft.AspNet.Identity
+@using UniManage.Data
+@using UniManage.Models
+@{
+    var portalClass = User.IsInRole("Administrator") ? "portal-admin" : User.IsInRole("Lecturer") ? "portal-lecturer" : "portal-student";
+    var portalSubtitle = User.IsInRole("Administrator")
+        ? "Control users, courses, and payments from a central admin console."
+        : User.IsInRole("Lecturer")
+            ? "Manage assigned courses, assignments, and student communication."
+            : "Track enrollments, coursework, and messages in one place.";
+    var notifications = new List<MessageNotification>();
+    var unreadNotificationCount = 0;
+    var notificationController = User.IsInRole("Lecturer") ? "Lecturer" : "Student";
+    if (User.IsInRole("Student") || User.IsInRole("Lecturer"))
+    {
+        try
+        {
+            var currentUserId = User.Identity != null ? User.Identity.GetUserId() : string.Empty;
+            if (!string.IsNullOrWhiteSpace(currentUserId))
+            {
+                using (var db = ApplicationDbContext.Create())
+                {
+                    notifications = db.MessageNotifications
+                        .Include(n => n.Message)
+                        .Include(n => n.Message.Sender)
+                        .Where(n => n.UserId == currentUserId)
+                        .OrderByDescending(n => n.Id)
+                        .Take(15)
+                        .ToList();
+                    unreadNotificationCount = notifications.Count(n => !n.IsRead);
+                }
+            }
+        }
+        catch
+        {
+            notifications = new List<MessageNotification>();
+            unreadNotificationCount = 0;
+        }
+    }
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title - UniManage Dashboard</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body class="dashboard-body @portalClass">
+    <div class="dashboard-shell">
+        @Html.Partial("_DashboardSidebar")
+        <main class="dashboard-main">
+            <div class="dashboard-page-header">
+                <div>
+                    <h2 class="mb-1">@ViewBag.Title</h2>
+                    <p class="text-secondary mb-0">@portalSubtitle</p>
+                </div>
+                <div class="d-flex align-items-center gap-2 flex-wrap justify-content-end">
+                    <a class="btn btn-outline-primary" href="@Url.Action("Index", "Home")">
+                        <i class="bi bi-house-door-fill me-1"></i>Go to Home
+                    </a>
+                    @if (User.IsInRole("Student") || User.IsInRole("Lecturer"))
+                    {
+                        <div class="dropdown">
+                            <button class="btn dashboard-bell-btn position-relative" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-bell-fill"></i>
+                                @if (unreadNotificationCount > 0)
+                                {
+                                    <span class="notification-badge">@unreadNotificationCount</span>
+                                }
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end notification-panel p-0">
+                                <div class="notification-panel-head">
+                                    <h6 class="mb-0">Notifications</h6>
+                                    @if (unreadNotificationCount > 0)
+                                    {
+                                        <form method="post" action="@Url.Action("MarkAllNotificationsRead", notificationController)">
+                                            @Html.AntiForgeryToken()
+                                            <button class="btn btn-link btn-sm p-0">Mark all read</button>
+                                        </form>
+                                    }
+                                </div>
+                                <div class="notification-items">
+                                    @if (!notifications.Any())
+                                    {
+                                        <p class="notification-empty">No notifications yet.</p>
+                                    }
+                                    else
+                                    {
+                                        foreach (var notification in notifications)
+                                        {
+                                            var messageContent = notification.Message != null ? notification.Message.Content : string.Empty;
+                                            var isAssignmentNotification = !string.IsNullOrWhiteSpace(messageContent) &&
+                                                messageContent.StartsWith("[ASSIGNMENT]", StringComparison.OrdinalIgnoreCase);
+                                            var displayText = !string.IsNullOrWhiteSpace(messageContent) ? messageContent : "You have a new notification.";
+                                            if (isAssignmentNotification)
+                                            {
+                                                displayText = displayText.Replace("[ASSIGNMENT]", "").Trim();
+                                            }
+                                            <a class="notification-item @(notification.IsRead ? "read" : "unread")"
+                                              
+                                              
+                                               href="@Url.Action("OpenNotification", notificationController, new { notificationId = notification.Id })">
+                                                <div class="notification-item-icon">
+                                                    <i class="bi @(isAssignmentNotification ? "bi-journal-check" : "bi-chat-left-text-fill")"></i>
+                                                </div>
+                                                <div class="notification-item-body">
+                                                    <p class="mb-1 fw-semibold">
+                                                        @(isAssignmentNotification
+                                                            ? "Coursework Notification"
+                                                            : "Message from " + ((notification.Message != null && notification.Message.Sender != null && !string.IsNullOrWhiteSpace(notification.Message.Sender.FullName))
+                                                                ? notification.Message.Sender.FullName
+                                                                : "UniManage"))
+                                                    </p>
+                                                    <p class="mb-0 small text-secondary">@displayText</p>
+                                                </div>
+                                            </a>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="dashboard-content">
+                @RenderBody()
+            </div>
+        </main>
+    </div>
+    @if (TempData["ToastMessage"] != null)
+    {
+        <div class="modal fade" id="statusToastModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content custom-status-modal border-0 shadow-lg">
+                    <div class="modal-header">
+                        <h5 class="modal-title d-flex align-items-center gap-2">
+                            <span class="status-dot status-dot-@TempData["ToastType"]"></span>
+                            @TempData["ToastTitle"]
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="mb-0">@TempData["ToastMessage"]</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary px-4" data-bs-dismiss="modal">OK</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js"></script>
+    @if (TempData["ToastMessage"] != null)
+    {
+        <script>
+            window.addEventListener("DOMContentLoaded", function () {
+                var modal = new bootstrap.Modal(document.getElementById("statusToastModal"));
+                modal.show();
+            });
+        </script>
+    }
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

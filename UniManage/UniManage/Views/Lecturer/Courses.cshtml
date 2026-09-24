@@ -1,0 +1,68 @@
+@model IEnumerable<UniManage.Models.Course>
+@{
+    ViewBag.Title = "Assigned Courses";
+    var courses = Model.ToList();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h5 class="fw-semibold mb-0">My Courses</h5>
+    <div class="d-flex align-items-center gap-2">
+        <span class="total-users-pill">Total Courses: @courses.Count</span>
+        <a class="btn btn-primary btn-sm" href="@Url.Action("Assignments", "Lecturer")">
+            <i class="bi bi-journal-check me-1"></i>Manage Assignments
+        </a>
+    </div>
+</div>
+
+@if (!courses.Any())
+{
+    <div class="admin-users-table-wrap p-4 text-center">
+        <div class="text-secondary mb-2">
+            <i class="bi bi-collection-play fs-3"></i>
+        </div>
+        <h6 class="fw-semibold mb-1">No courses assigned yet</h6>
+        <p class="text-secondary mb-0">Your assigned courses will appear here once available.</p>
+    </div>
+}
+else
+{
+    <div class="admin-users-table-wrap">
+        <div class="table-responsive">
+            <table class="table admin-users-table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th style="min-width:240px;">Course</th>
+                        <th style="min-width:170px;">Category</th>
+                        <th style="min-width:130px;">Price</th>
+                        <th style="min-width:160px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var c in courses)
+                    {
+                        <tr class="user-selectable-row">
+                            <td>
+                                <div class="fw-semibold">@c.Title</div>
+                                <div class="small text-secondary text-truncate" style="max-width: 420px;">
+                                    @c.Description
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge rounded-pill px-3 py-2"
+                                      style="background: linear-gradient(135deg, #e0ebff 0%, #d8f0ff 100%); color:#1f3b8f; border:1px solid rgba(59,130,246,.35); font-weight:600;">
+                                    @((c.CourseCategory != null && !string.IsNullOrWhiteSpace(c.CourseCategory.Name)) ? c.CourseCategory.Name : "Not Assigned")
+                                </span>
+                            </td>
+                            <td class="fw-semibold">LKR @c.Price.ToString("N2")</td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-primary" href="@Url.Action("Details", "Courses", new { id = c.Id })">
+                                    <i class="bi bi-eye me-1"></i>View
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

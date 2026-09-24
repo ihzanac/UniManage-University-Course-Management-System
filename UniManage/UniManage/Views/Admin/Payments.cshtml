@@ -1,0 +1,207 @@
+@model UniManage.ViewModels.AdminPaymentsPageViewModel
+@{
+    ViewBag.Title = "Payments";
+    var payments = Model.Payments;
+    var searchTerm = ViewBag.SearchTerm as string ?? string.Empty;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h5 class="fw-semibold mb-0">Payment Records</h5>
+    <span class="total-users-pill">Total Payments: @payments.Count</span>
+</div>
+
+<div class="d-flex gap-2 mb-3 flex-wrap">
+    <button id="btnOpenPaymentDetails" type="button" class="btn btn-primary" disabled data-bs-toggle="modal" data-bs-target="#paymentDetailsModal">
+        <i class="bi bi-eye-fill me-1"></i>View
+    </button>
+    <a id="btnDownloadPaymentPdf" class="btn btn-success disabled" href="#" aria-disabled="true">
+        <i class="bi bi-file-earmark-pdf-fill me-1"></i>Generate PDF
+    </a>
+</div>
+
+<form method="get" class="admin-users-table-wrap p-3 mb-3" action="@Url.Action("Payments")">
+    <div class="row g-2 align-items-end">
+        <div class="col-lg-9">
+            <label class="form-label mb-1">Search Payments</label>
+            <input type="text"
+                   name="search"
+                   value="@searchTerm"
+                   class="form-control"
+                   placeholder="Search by student name, email, course, or status..." />
+        </div>
+        <div class="col-lg-3 d-grid">
+            <button class="btn btn-primary">
+                <i class="bi bi-search me-1"></i>Search
+            </button>
+        </div>
+    </div>
+</form>
+
+@if (!payments.Any())
+{
+    <p class="text-secondary mb-0">No payments found in the system yet.</p>
+}
+else
+{
+    <div class="table-responsive admin-users-table-wrap">
+        <table class="table admin-users-table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Course</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Paid At</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var payment in payments)
+                {
+                    <tr class="user-selectable-row"
+                        data-payment-id="@payment.Id"
+                        data-student-name="@payment.StudentName"
+                        data-student-email="@payment.StudentEmail"
+                        data-course-title="@payment.CourseTitle"
+                        data-amount="@payment.Amount.ToString("N2")"
+                        data-status="@payment.Status"
+                        data-paid-at="@payment.PaidAtUtc.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")"
+                        data-can-pdf="@payment.CanGeneratePdf.ToString().ToLowerInvariant()">
+                        <td>
+                            <div class="fw-semibold">@payment.StudentName</div>
+                            <div class="small text-secondary">@payment.StudentEmail</div>
+                        </td>
+                        <td>@payment.CourseTitle</td>
+                        <td>LKR @payment.Amount.ToString("N2")</td>
+                        <td>
+                            @{
+                                var statusLower = payment.Status.ToLowerInvariant();
+                                var statusClass = "bg-primary text-white";
+                                if (statusLower == "paid")
+                                {
+                                    statusClass = "bg-success text-white";
+                                }
+                                else if (statusLower == "pending")
+                                {
+                                    statusClass = "bg-warning text-dark";
+                                }
+                                else if (statusLower == "failed")
+                                {
+                                    statusClass = "bg-danger text-white";
+                                }
+                                else if (statusLower == "cancelled")
+                                {
+                                    statusClass = "bg-secondary text-white";
+                                }
+                            }
+                            <span class="badge rounded-pill px-3 py-2 @statusClass">@payment.Status</span>
+                        </td>
+                        <td>@payment.PaidAtUtc.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<div class="modal fade" id="paymentDetailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header">
+                <h5 class="modal-title">Payment Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="small text-secondary mb-1">Payment ID</div>
+                <p class="fw-semibold mb-3" id="paymentDetailId">-</p>
+                <div class="small text-secondary mb-1">Student</div>
+                <p class="fw-semibold mb-3" id="paymentDetailStudent">-</p>
+                <div class="small text-secondary mb-1">Course</div>
+                <p class="fw-semibold mb-3" id="paymentDetailCourse">-</p>
+                <div class="small text-secondary mb-1">Amount</div>
+                <p class="fw-semibold mb-3" id="paymentDetailAmount">-</p>
+                <div class="small text-secondary mb-1">Status</div>
+                <p class="fw-semibold mb-3" id="paymentDetailStatus">-</p>
+                <div class="small text-secondary mb-1">Paid At</div>
+                <p class="fw-semibold mb-0" id="paymentDetailPaidAt">-</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            const rows = document.querySelectorAll(".user-selectable-row");
+            const btnDetails = document.getElementById("btnOpenPaymentDetails");
+            const btnPdf = document.getElementById("btnDownloadPaymentPdf");
+            const detailId = document.getElementById("paymentDetailId");
+            const detailStudent = document.getElementById("paymentDetailStudent");
+            const detailCourse = document.getElementById("paymentDetailCourse");
+            const detailAmount = document.getElementById("paymentDetailAmount");
+            const detailStatus = document.getElementById("paymentDetailStatus");
+            const detailPaidAt = document.getElementById("paymentDetailPaidAt");
+
+            let selected = null;
+
+            function setPdfButtonState(canGenerate, paymentId) {
+                if (canGenerate) {
+                    btnPdf.classList.remove("disabled");
+                    btnPdf.removeAttribute("aria-disabled");
+                    btnPdf.href = '@Url.Action("DownloadPaymentReceipt", "Admin")' + '?id=' + paymentId;
+                    return;
+                }
+
+                btnPdf.classList.add("disabled");
+                btnPdf.setAttribute("aria-disabled", "true");
+                btnPdf.href = "#";
+            }
+
+            function clearSelection() {
+                rows.forEach(r => r.classList.remove("active"));
+                selected = null;
+                btnDetails.disabled = true;
+                setPdfButtonState(false, 0);
+            }
+
+            function selectRow(row) {
+                rows.forEach(r => r.classList.remove("active"));
+                row.classList.add("active");
+                selected = {
+                    id: row.dataset.paymentId,
+                    studentName: row.dataset.studentName || "",
+                    studentEmail: row.dataset.studentEmail || "",
+                    courseTitle: row.dataset.courseTitle || "",
+                    amount: row.dataset.amount || "0.00",
+                    status: row.dataset.status || "",
+                    paidAt: row.dataset.paidAt || "",
+                    canPdf: row.dataset.canPdf === "true"
+                };
+                btnDetails.disabled = false;
+                setPdfButtonState(selected.canPdf, selected.id);
+            }
+
+            rows.forEach(row => {
+                row.addEventListener("click", function () {
+                    if (selected && selected.id === row.dataset.paymentId) {
+                        clearSelection();
+                        return;
+                    }
+                    selectRow(row);
+                });
+            });
+
+            btnDetails.addEventListener("click", function () {
+                if (!selected) return;
+                detailId.textContent = "PAY-" + selected.id;
+                detailStudent.textContent = selected.studentName + " (" + selected.studentEmail + ")";
+                detailCourse.textContent = selected.courseTitle;
+                detailAmount.textContent = "LKR " + selected.amount;
+                detailStatus.textContent = selected.status;
+                detailPaidAt.textContent = selected.paidAt;
+            });
+        })();
+    </script>
+}

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="0074f9107673420287be85168aba5b37" Name="Diagram1" ZoomLevel="33">
+        <EntityTypeShape EntityType="dbunimanageModel.C__EFMigrationsHistory" Width="1.5" PointX="2" PointY="12" IsExpanded="true" />
+        <EntityTypeShape EntityType="dbunimanageModel.sysdiagram" Width="1.5" PointX="4" PointY="11.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="dbunimanageModel.tblAssignment" Width="1.5" PointX="10.5" PointY="15.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="dbunimanageModel.tblAssignmentSubmission" Width="1.5" PointX="5.25" PointY="17.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="dbunimanageModel.tblContactMessage" Width="1.5" PointX="10.75" PointY="12.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="dbunimanageModel.tblCourse" Width="1.5" PointX="8.25" PointY="16.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="dbunimanageModel.tblCourseCategory" Width="1.5" PointX="6" PointY="10.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="dbunimanageModel.tblCourseMaterial" Width="1.5" PointX="10.5" PointY="19.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="dbunimanageModel.tblEnrollment" Width="1.5" PointX="13.5" PointY="17.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="dbunimanageModel.tblGrade" Width="1.5" PointX="7.5" PointY="13.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="dbunimanageModel.tblMessage" Width="1.5" PointX="5.25" PointY="21.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="dbunimanageModel.tblMessageNotification" Width="1.5" PointX="7.5" PointY="21.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="dbunimanageModel.tblOtpToken" Width="1.5" PointX="5.25" PointY="24.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="dbunimanageModel.tblPayment" Width="1.5" PointX="15.75" PointY="17.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="dbunimanageModel.tblRoleClaim" Width="1.5" PointX="3" PointY="8.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="dbunimanageModel.tblRole" Width="1.5" PointX="0.75" PointY="16.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="dbunimanageModel.tblSystemUsageLog" Width="1.5" PointX="8.625" PointY="9.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="dbunimanageModel.tblUserClaim" Width="1.5" PointX="5.25" PointY="28" IsExpanded="true" />
+        <EntityTypeShape EntityType="dbunimanageModel.tblUserLogin" Width="1.5" PointX="5.25" PointY="30.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="dbunimanageModel.tblUser" Width="1.5" PointX="3" PointY="15.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="dbunimanageModel.tblUserToken" Width="1.5" PointX="5.25" PointY="33.5" IsExpanded="true" />
+        <AssociationConnector Association="dbunimanageModel.FK_tblAssignment_tblCourse_CourseId" ManuallyRouted="false" />
+        <AssociationConnector Association="dbunimanageModel.FK_tblAssignmentSubmission_tblAssignment_AssignmentId" ManuallyRouted="false" />
+        <AssociationConnector Association="dbunimanageModel.FK_tblAssignmentSubmission_tblUsers_StudentId" ManuallyRouted="false" />
+        <AssociationConnector Association="dbunimanageModel.FK_tblGrade_tblAssignmentSubmission_AssignmentSubmissionId" ManuallyRouted="false" />
+        <AssociationConnector Association="dbunimanageModel.FK_tblCourse_tblCourseCategory_CourseCategoryId" ManuallyRouted="false" />
+        <AssociationConnector Association="dbunimanageModel.FK_tblCourse_tblUsers_LecturerId" ManuallyRouted="false" />
+        <AssociationConnector Association="dbunimanageModel.FK_tblCourseMaterial_tblCourse_CourseId" ManuallyRouted="false" />
+        <AssociationConnector Association="dbunimanageModel.FK_tblEnrollment_tblCourse_CourseId" ManuallyRouted="false" />
+        <AssociationConnector Association="dbunimanageModel.FK_tblEnrollment_tblUsers_StudentId" ManuallyRouted="false" />
+        <AssociationConnector Association="dbunimanageModel.FK_tblPayment_tblEnrollment_EnrollmentId" ManuallyRouted="false" />
+        <AssociationConnector Association="dbunimanageModel.FK_tblMessage_tblUsers_ReceiverId" ManuallyRouted="false" />
+        <AssociationConnector Association="dbunimanageModel.FK_tblMessage_tblUsers_SenderId" ManuallyRouted="false" />
+        <AssociationConnector Association="dbunimanageModel.FK_tblMessageNotification_tblMessage_MessageId" ManuallyRouted="false" />
+        <AssociationConnector Association="dbunimanageModel.FK_tblMessageNotification_tblUsers_UserId" ManuallyRouted="false" />
+        <AssociationConnector Association="dbunimanageModel.FK_tblOtpToken_tblUsers_UserId" ManuallyRouted="false" />
+        <AssociationConnector Association="dbunimanageModel.FK_tblRoleClaims_tblRoles_RoleId" ManuallyRouted="false" />
+        <AssociationConnector Association="dbunimanageModel.FK_tblUserClaims_tblUsers_UserId" ManuallyRouted="false" />
+        <AssociationConnector Association="dbunimanageModel.FK_tblUserLogins_tblUsers_UserId" ManuallyRouted="false" />
+        <AssociationConnector Association="dbunimanageModel.FK_tblUserTokens_tblUsers_UserId" ManuallyRouted="false" />
+        <AssociationConnector Association="dbunimanageModel.tblUserRoles" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

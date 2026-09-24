@@ -1,0 +1,31 @@
+@{
+    ViewBag.Title = "Lecturer Dashboard";
+}
+<div class="dashboard-intro dashboard-intro-lecturer mb-3">
+    <div>
+        <p class="dashboard-kicker mb-1">Lecturer Workspace</p>
+        <h4 class="mb-1">Manage teaching activities</h4>
+        <p class="mb-0">Monitor course load and assignment workflow from one place.</p>
+    </div>
+    <i class="bi bi-journal-richtext dashboard-intro-icon"></i>
+</div>
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="card shadow-sm stat-card stat-card-lecturer">
+            <div class="card-body">
+                <div class="stat-icon"><i class="bi bi-journal-richtext"></i></div>
+                <p class="stat-label mb-1">Assigned Courses</p>
+                <h3 class="stat-value mb-0">@ViewBag.Courses</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow-sm stat-card stat-card-lecturer">
+            <div class="card-body">
+                <div class="stat-icon"><i class="bi bi-list-check"></i></div>
+                <p class="stat-label mb-1">Assignments</p>
+                <h3 class="stat-value mb-0">@ViewBag.Assignments</h3>
+            </div>
+        </div>
+    </div>
+</div>

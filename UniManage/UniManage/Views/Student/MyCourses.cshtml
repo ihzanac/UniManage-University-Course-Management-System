@@ -1,0 +1,81 @@
+@model IEnumerable<UniManage.Models.Enrollment>
+@{
+    ViewBag.Title = "My Courses";
+    var enrollments = Model.ToList();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h5 class="fw-semibold mb-0">My Enrolled Courses</h5>
+    <span class="total-users-pill">Total Courses: @enrollments.Count</span>
+</div>
+
+@if (!enrollments.Any())
+{
+    <p class="text-secondary mb-0">You have not enrolled in any courses yet.</p>
+}
+else
+{
+    <div class="table-responsive admin-users-table-wrap">
+        <table class="table admin-users-table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Course</th>
+                    <th>Lecturer</th>
+                    <th>Enrollment Status</th>
+                    <th>Payment Status</th>
+                    <th>Amount</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in enrollments)
+                {
+                    var paymentStatus = item.Payment != null ? item.Payment.Status.ToString() : "Pending";
+                    var isPaid = item.Payment != null && item.Payment.Status == UniManage.Models.PaymentStatus.Paid;
+                    var paymentBadgeClass = "bg-warning text-dark";
+                    if (item.Payment != null && item.Payment.Status == UniManage.Models.PaymentStatus.Paid)
+                    {
+                        paymentBadgeClass = "bg-success text-white";
+                    }
+                    else if (item.Payment != null && item.Payment.Status == UniManage.Models.PaymentStatus.Failed)
+                    {
+                        paymentBadgeClass = "bg-danger text-white";
+                    }
+                    else if (item.Payment != null && item.Payment.Status == UniManage.Models.PaymentStatus.Cancelled)
+                    {
+                        paymentBadgeClass = "bg-secondary text-white";
+                    }
+
+                    <tr>
+                        <td class="fw-semibold">@(item.Course != null ? item.Course.Title : "N/A")</td>
+                        <td>@((item.Course != null && item.Course.Lecturer != null) ? item.Course.Lecturer.FullName : "N/A")</td>
+                        <td>@item.Status</td>
+                        <td>
+                            <span class="badge @paymentBadgeClass px-3 py-2">
+                                @paymentStatus
+                            </span>
+                        </td>
+                        <td>LKR @((item.Payment != null ? item.Payment.Amount : (item.Course != null ? item.Course.Price : 0)).ToString("N2"))</td>
+                        <td>
+                            <div class="d-flex gap-2 flex-wrap">
+                                @if (!isPaid)
+                                {
+                                    <a class="btn btn-sm btn-primary" href="@Url.Action("Checkout", "Payment", new { courseId = item.CourseId })">Pay Now</a>
+                                }
+                                else
+                                {
+                                    <a class="btn btn-sm btn-outline-primary"
+                                      
+                                      
+                                       href="@Url.Action("DownloadInvoice", "Student", new { enrollmentId = item.Id })">
+                                        <i class="bi bi-file-earmark-pdf-fill me-1"></i>Invoice
+                                    </a>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

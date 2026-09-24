@@ -1,0 +1,6 @@
+﻿.vs/
+bin/
+obj/
+UniManage/UniManage/bin/
+UniManage/UniManage/obj/
+UniManage/UniManage/Web.config

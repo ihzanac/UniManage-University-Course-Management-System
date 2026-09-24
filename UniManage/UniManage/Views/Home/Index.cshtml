@@ -1,0 +1,151 @@
+@model IEnumerable<UniManage.Models.Course>
+@{
+    ViewBag.Title = "Home";
+    var latest = Model.ToList();
+}
+
+<section class="hero-section p-5 mb-5 shadow-sm">
+    <div class="container-fluid py-4 hero-content">
+        <p class="text-uppercase fw-semibold text-primary mb-2">Smart University Portal</p>
+        <h1 class="display-5 fw-bold mb-3">UniManage - University Course Management</h1>
+        <p class="col-md-9 fs-5 text-secondary">Enroll in industry-ready courses, manage assignments, communicate with lecturers, and track your academic progress with a modern student experience.</p>
+        <div class="d-flex gap-2 flex-wrap">
+            <a class="btn btn-primary btn-lg" href="@Url.Action("Index", "Courses")">View All Courses</a>
+            @if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                if (User.IsInRole("Administrator"))
+                {
+                    <a class="btn btn-outline-primary btn-lg" href="@Url.Action("Dashboard", "Admin")">Go to Dashboard</a>
+                }
+                else if (User.IsInRole("Lecturer"))
+                {
+                    <a class="btn btn-outline-primary btn-lg" href="@Url.Action("Dashboard", "Lecturer")">Go to Dashboard</a>
+                }
+                else
+                {
+                    <a class="btn btn-outline-primary btn-lg" href="@Url.Action("Dashboard", "Student")">Go to Dashboard</a>
+                }
+            }
+            else
+            {
+                <a class="btn btn-outline-primary btn-lg" href="@Url.Action("Register", "Account")">Get Started</a>
+            }
+        </div>
+    </div>
+</section>
+
+<section class="mb-5">
+    <h3 class="section-title">Latest Courses</h3>
+    @if (latest.Count == 0)
+    {
+        <div class="card shadow-sm p-4 text-center">
+            <h5 class="fw-semibold mb-2">No Latest Courses Available</h5>
+            <p class="text-secondary mb-0">New courses will appear here once they are added by the administrator.</p>
+        </div>
+    }
+    else
+    {
+        var slideSize = 3;
+        var slideCount = (int)Math.Ceiling(latest.Count / (double)slideSize);
+        <div id="courseCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                @for (var i = 0; i < slideCount; i++)
+                {
+                    <button type="button"
+                            data-bs-target="#courseCarousel"
+                            data-bs-slide-to="@i"
+                            class="@(i == 0 ? "active" : "")"
+                            aria-current="@(i == 0 ? "true" : "false")"
+                            aria-label="Slide @(i + 1)"></button>
+                }
+            </div>
+            <div class="carousel-inner">
+                @for (var i = 0; i < slideCount; i++)
+                {
+                    <div class="carousel-item @(i == 0 ? "active" : "")">
+                        <div class="row g-3 home-course-carousel-row">
+                            @for (var j = 0; j < slideSize; j++)
+                            {
+                                var index = (i * slideSize) + j;
+                                if (index >= latest.Count)
+                                {
+                                    break;
+                                }
+
+                                var course = latest[index];
+                                <div class="col-md-4">
+                                    <div class="card shadow-sm course-card home-course-carousel-card h-100">
+                                        <img src="@course.ImageUrl" class="home-course-carousel-image" alt="@course.Title" />
+                                        <div class="card-body p-4">
+                                            <h5 class="fw-semibold mb-2">@course.Title</h5>
+                                            <p class="text-secondary mb-2">
+                                                <i class="bi bi-person-badge me-1"></i>
+                                                Lecturer: @((course.Lecturer != null && !string.IsNullOrWhiteSpace(course.Lecturer.FullName)) ? course.Lecturer.FullName : "Not assigned")
+                                            </p>
+                                            <a class="btn btn-outline-primary" href="@Url.Action("Details", "Courses", new { id = course.Id })">More Details</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#courseCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#courseCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    }
+</section>
+
+<section class="mb-5">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 p-3">
+                <h5 class="fw-bold">Why UniManage?</h5>
+                <p class="text-secondary mb-0">UniManage brings enrollment, payments, assignments, grading, and communication into one smooth system that students and staff can use daily without confusion.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 p-3">
+                <h5 class="fw-bold">For Students</h5>
+                <p class="text-secondary mb-0">Track your courses, submit assignments on time, view grades, and communicate with lecturers from one dashboard designed for clarity and speed.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 p-3">
+                <h5 class="fw-bold">For Lecturers & Admins</h5>
+                <p class="text-secondary mb-0">Manage classes, assignments, grading, reports, and academic operations efficiently with role-based access and modern management tools.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="mb-5">
+    <div class="card p-4">
+        <div class="row g-4 align-items-center">
+            <div class="col-lg-8">
+                <h3 class="fw-bold mb-2">A Better University Experience</h3>
+                <p class="text-secondary mb-0">Our mission is to simplify academic administration while creating a user-friendly learning environment. UniManage helps universities reduce manual work and improve student outcomes through digital-first workflows.</p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <a class="btn btn-primary" href="@Url.Action("About", "Home")">Learn More</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="mb-5">
+    <h3 class="section-title">Quick Facts</h3>
+    <div class="row g-3">
+        <div class="col-6 col-md-3"><div class="card p-3 text-center"><div class="display-6 fw-bold text-primary">@latest.Count+</div><div class="text-secondary">Courses Listed</div></div></div>
+        <div class="col-6 col-md-3"><div class="card p-3 text-center"><div class="display-6 fw-bold text-primary">24/7</div><div class="text-secondary">Platform Access</div></div></div>
+        <div class="col-6 col-md-3"><div class="card p-3 text-center"><div class="display-6 fw-bold text-primary">Secure</div><div class="text-secondary">Online Payments</div></div></div>
+        <div class="col-6 col-md-3"><div class="card p-3 text-center"><div class="display-6 fw-bold text-primary">3</div><div class="text-secondary">Role Dashboards</div></div></div>
+    </div>
+</section>

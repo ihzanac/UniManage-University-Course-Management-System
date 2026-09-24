@@ -1,0 +1,48 @@
+@model UniManage.Models.Course
+@{
+    ViewBag.Title = "Course Details";
+}
+
+<div class="course-details-shell">
+    <div class="course-details-grid">
+        <div class="course-details-main">
+            <div class="course-details-media-wrap mb-3">
+                <img src="@Model.ImageUrl" class="course-details-image" alt="@Model.Title" />
+            </div>
+
+            <div class="d-flex flex-wrap gap-2 mb-2">
+                <span class="course-details-chip">@(Model.CourseCategory != null ? Model.CourseCategory.Name : "N/A")</span>
+                <span class="course-details-chip">Course ID: @Model.Id</span>
+            </div>
+
+            <h2 class="course-details-title">@Model.Title</h2>
+            <p class="course-details-description mb-0">@Model.Description</p>
+        </div>
+
+        <aside class="course-details-side">
+            <div class="course-details-panel">
+                <h5 class="fw-semibold mb-3">Course Information</h5>
+                <div class="course-details-info-row">
+                    <span>Lecturer</span>
+                    <strong>@(Model.Lecturer == null || string.IsNullOrWhiteSpace(Model.Lecturer.FullName) ? "Not assigned" : Model.Lecturer.FullName)</strong>
+                </div>
+                <div class="course-details-info-row">
+                    <span>Category</span>
+                    <strong>@(Model.CourseCategory == null || string.IsNullOrWhiteSpace(Model.CourseCategory.Name) ? "N/A" : Model.CourseCategory.Name)</strong>
+                </div>
+                <div class="course-details-info-row">
+                    <span>Price</span>
+                    <strong class="text-primary">LKR @Model.Price.ToString("N2")</strong>
+                </div>
+
+                <form method="post" class="mt-4" action="@Url.Action("Start", "Enrollment")">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="courseId" value="@Model.Id" />
+                    <button class="btn btn-primary w-100">Enroll Now</button>
+                </form>
+
+                <a class="btn btn-outline-primary w-100 mt-2" href="@Url.Action("Index", "Courses")">Back to Courses</a>
+            </div>
+        </aside>
+    </div>
+</div>

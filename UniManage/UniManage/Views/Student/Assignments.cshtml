@@ -1,0 +1,376 @@
+@model UniManage.ViewModels.StudentAssignmentsPageViewModel
+@using Newtonsoft.Json
+@{
+    ViewBag.Title = "Assignments";
+    var assignments = Model.Assignments.OrderBy(a => a.DeadlineUtc).ToList();
+    TimeZoneInfo sriLankaTimeZone;
+    try { sriLankaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Sri Lanka Standard Time"); }
+    catch (TimeZoneNotFoundException)
+    {
+        try { sriLankaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Colombo"); }
+        catch (TimeZoneNotFoundException) { sriLankaTimeZone = TimeZoneInfo.Utc; }
+    }
+    var assignmentEventsJson = JsonConvert.SerializeObject(assignments.Select(item => new
+    {
+        id = item.Id,
+        title = item.Title,
+        localDate = TimeZoneInfo.ConvertTimeFromUtc(
+            DateTime.SpecifyKind(item.DeadlineUtc, DateTimeKind.Utc),
+            sriLankaTimeZone).ToString("yyyy-MM-dd"),
+        extendedProps = new
+        {
+            course = item.CourseTitle,
+            description = item.Description,
+            deadline = TimeZoneInfo.ConvertTimeFromUtc(
+                DateTime.SpecifyKind(item.DeadlineUtc, DateTimeKind.Utc),
+                sriLankaTimeZone).ToString("yyyy-MM-dd hh:mm tt") + " SLST",
+            isSubmitted = item.IsSubmitted,
+            latestSubmittedAt = item.LatestSubmittedAtUtc.HasValue
+                ? TimeZoneInfo.ConvertTimeFromUtc(
+                    DateTime.SpecifyKind(item.LatestSubmittedAtUtc.Value, DateTimeKind.Utc),
+                    sriLankaTimeZone).ToString("yyyy-MM-dd hh:mm tt") + " SLST"
+                : null,
+            isOverdue = item.IsOverdue,
+            hasMaterial = item.HasMaterial,
+            materialFileName = item.MaterialFileName
+        }
+    }));
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.css" />
+<style>
+    .assignment-stat-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+        padding: .5rem .85rem;
+        border-radius: 999px;
+        font-size: .82rem;
+        font-weight: 600;
+        border: 1px solid transparent;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, .08);
+    }
+
+    .assignment-stat-pill i {
+        font-size: .9rem;
+    }
+
+    .assignment-stat-submitted {
+        background: linear-gradient(135deg, #e8fff1 0%, #d7f8e6 100%);
+        color: #0f7a43;
+        border-color: #8ce0b6;
+    }
+
+    .assignment-stat-overdue {
+        background: linear-gradient(135deg, #ffe7ea 0%, #ffd9df 100%);
+        color: #a32032;
+        border-color: #ffb2bf;
+    }
+
+    .student-assignment-calendar .fc-daygrid-day-top {
+        justify-content: flex-start;
+        padding: .3rem .35rem 0 .35rem;
+    }
+
+    .student-assignment-calendar .fc-daygrid-day-number {
+        font-weight: 600;
+        color: #334155;
+        text-decoration: none !important;
+    }
+
+    .student-assignment-calendar .fc-col-header-cell-cushion {
+        text-decoration: none !important;
+        color: #334155;
+        font-weight: 600;
+    }
+
+    .student-assignment-calendar .fc-daygrid-event {
+        border-radius: 8px;
+        padding: 2px 4px;
+        margin: 2px 4px;
+        text-decoration: none !important;
+    }
+
+    .student-assignment-calendar .fc-event-title {
+        white-space: normal;
+        line-height: 1.2;
+        font-size: .78rem;
+        font-weight: 600;
+        text-decoration: none !important;
+    }
+
+    .student-assignment-calendar .fc-daygrid-event-dot {
+        display: none;
+    }
+
+    .student-assignment-calendar .fc-daygrid-day-frame {
+        min-height: 96px;
+        transition: background-color .18s ease, box-shadow .18s ease;
+        border-radius: 10px;
+    }
+
+    /* Remove default "today" highlighted date background */
+    .student-assignment-calendar .fc-day-today {
+        background: transparent !important;
+    }
+
+    /* Date hover effect */
+    .student-assignment-calendar .fc-daygrid-day:hover .fc-daygrid-day-frame {
+        background: rgba(99, 102, 241, .08);
+        box-shadow: inset 0 0 0 1px rgba(99, 102, 241, .22);
+        cursor: pointer;
+    }
+
+    /* Active selected date effect */
+    .student-assignment-calendar .fc-day-selected .fc-daygrid-day-frame {
+        background: rgba(37, 99, 235, .16);
+        box-shadow: inset 0 0 0 2px rgba(37, 99, 235, .5);
+    }
+
+    .student-assignment-calendar .fc-day-selected .fc-daygrid-day-number {
+        color: #1d4ed8;
+        font-weight: 700;
+    }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h5 class="fw-semibold mb-0">Assignment Calendar</h5>
+    <div class="d-flex gap-2 flex-wrap">
+        <span class="total-users-pill">Total Assignments: @assignments.Count</span>
+        <span class="assignment-stat-pill assignment-stat-submitted">
+            <i class="bi bi-check-circle-fill"></i>
+            Submitted: @assignments.Count(a => a.IsSubmitted)
+        </span>
+        <span class="assignment-stat-pill assignment-stat-overdue">
+            <i class="bi bi-exclamation-octagon-fill"></i>
+            Overdue: @assignments.Count(a => a.IsOverdue)
+        </span>
+    </div>
+</div>
+
+@if (TempData["Error"] != null) { <div class="alert alert-danger">@TempData["Error"]</div> }
+@if (TempData["Success"] != null) { <div class="alert alert-success">@TempData["Success"]</div> }
+
+@if (!assignments.Any())
+{
+    <p class="text-secondary mb-0">No assignments are available for your active courses.</p>
+}
+else
+{
+    <div class="row g-3">
+        <div class="col-lg-8">
+            <div class="admin-users-table-wrap p-3">
+                <div id="assignmentCalendar" class="student-assignment-calendar"></div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="admin-users-table-wrap p-3" id="assignmentDetailsPanel">
+                <h6 class="fw-semibold mb-3">Assignment Details</h6>
+                <p class="text-secondary mb-0">Select a date/event from the calendar to see assignment details and submit your file.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-3 admin-users-table-wrap p-3" id="assignmentSubmissionArea">
+        <h6 class="fw-semibold mb-3">Submit Assignment</h6>
+        <form method="post" enctype="multipart/form-data" id="assignmentSubmitForm" action="@Url.Action("SubmitAssignment")">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="assignmentId" id="selectedAssignmentId" />
+            <div class="row g-2 align-items-end">
+                <div class="col-lg-7">
+                    <label class="form-label">Upload File (PDF / Word)</label>
+                    <input type="file" name="submissionFile" id="submissionFileInput" class="form-control" accept=".pdf,.doc,.docx" required disabled />
+                </div>
+                <div class="col-lg-5 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary flex-fill" id="btnSubmitAssignment" disabled>
+                        <i class="bi bi-upload me-1"></i>Submit Assignment
+                    </button>
+                    <a class="btn btn-outline-primary flex-fill disabled" id="btnDownloadMaterial" href="#" aria-disabled="true">
+                        <i class="bi bi-download me-1"></i>Material
+                    </a>
+                    <a class="btn btn-outline-secondary flex-fill disabled" id="btnViewSubmission" href="#" aria-disabled="true">
+                        <i class="bi bi-file-earmark-arrow-down me-1"></i>View Submission
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js"></script>
+    <script>
+        (function () {
+            const calendarEl = document.getElementById("assignmentCalendar");
+            if (!calendarEl) return;
+
+            const assignments = @Html.Raw(assignmentEventsJson);
+
+            const detailsPanel = document.getElementById("assignmentDetailsPanel");
+            const selectedAssignmentId = document.getElementById("selectedAssignmentId");
+            const btnSubmit = document.getElementById("btnSubmitAssignment");
+            const btnDownloadMaterial = document.getElementById("btnDownloadMaterial");
+            const btnViewSubmission = document.getElementById("btnViewSubmission");
+            const submissionFileInput = document.getElementById("submissionFileInput");
+
+            function setActiveDateCell(dateStr) {
+                calendarEl.querySelectorAll(".fc-day-selected").forEach(el => el.classList.remove("fc-day-selected"));
+                const cell = calendarEl.querySelector(`.fc-daygrid-day[data-date="${dateStr}"]`);
+                if (cell) {
+                    cell.classList.add("fc-day-selected");
+                }
+            }
+
+            function resetSelectionActions() {
+                selectedAssignmentId.value = "";
+                btnSubmit.disabled = true;
+                if (submissionFileInput) {
+                    submissionFileInput.value = "";
+                    submissionFileInput.disabled = true;
+                }
+                btnDownloadMaterial.href = "#";
+                btnDownloadMaterial.classList.add("disabled");
+                btnDownloadMaterial.setAttribute("aria-disabled", "true");
+                btnViewSubmission.href = "#";
+                btnViewSubmission.classList.add("disabled");
+                btnViewSubmission.setAttribute("aria-disabled", "true");
+            }
+
+            const now = new Date();
+            const coloredEvents = assignments.map(eventItem => {
+                const props = eventItem.extendedProps || {};
+                if (props.isSubmitted) {
+                    return {
+                        ...eventItem,
+                        start: eventItem.localDate,
+                        allDay: true,
+                        backgroundColor: "#198754",
+                        borderColor: "#198754"
+                    };
+                }
+
+                const deadlineDate = new Date(eventItem.localDate + "T23:59:59");
+                if (props.isOverdue || deadlineDate < now) {
+                    return {
+                        ...eventItem,
+                        start: eventItem.localDate,
+                        allDay: true,
+                        backgroundColor: "#dc3545",
+                        borderColor: "#dc3545"
+                    };
+                }
+
+                return {
+                    ...eventItem,
+                    start: eventItem.localDate,
+                    allDay: true,
+                    backgroundColor: "#fd7e14",
+                    borderColor: "#fd7e14"
+                };
+            });
+
+            function renderDetails(event) {
+                const props = event.extendedProps || {};
+                const submissionBadge = props.isSubmitted
+                    ? `<span class="badge bg-success">Submitted</span>`
+                    : `<span class="badge bg-warning text-dark">Pending</span>`;
+                const dueBadge = props.isOverdue
+                    ? `<span class="badge bg-danger">Overdue</span>`
+                    : `<span class="badge bg-primary">Upcoming</span>`;
+                const latestSubmissionText = props.latestSubmittedAt
+                    ? `<p class="mb-1"><strong>Latest Submission:</strong> ${props.latestSubmittedAt}</p>`
+                    : "";
+                const materialText = props.hasMaterial
+                    ? `<p class="mb-1"><strong>Material:</strong> ${props.materialFileName || "Attached file available"}</p>`
+                    : `<p class="mb-1 text-secondary"><strong>Material:</strong> Not attached</p>`;
+
+                detailsPanel.innerHTML = `
+                    <h6 class="fw-semibold mb-3">Assignment Details</h6>
+                    <div class="d-flex gap-2 mb-2">${submissionBadge}${dueBadge}</div>
+                    <p class="mb-1"><strong>Title:</strong> ${event.title}</p>
+                    <p class="mb-1"><strong>Course:</strong> ${props.course || "N/A"}</p>
+                    <p class="mb-1"><strong>Deadline:</strong> ${props.deadline || "N/A"}</p>
+                    ${latestSubmissionText}
+                    ${materialText}
+                    <p class="mb-0 text-secondary">${props.description || ""}</p>
+                `;
+                selectedAssignmentId.value = event.id;
+                btnSubmit.disabled = false;
+                if (submissionFileInput) {
+                    submissionFileInput.disabled = false;
+                }
+                if (props.hasMaterial) {
+                    btnDownloadMaterial.href = '@Url.Action("DownloadAssignmentMaterial", "Student")' + '?assignmentId=' + encodeURIComponent(event.id);
+                    btnDownloadMaterial.classList.remove("disabled");
+                    btnDownloadMaterial.removeAttribute("aria-disabled");
+                } else {
+                    btnDownloadMaterial.href = "#";
+                    btnDownloadMaterial.classList.add("disabled");
+                    btnDownloadMaterial.setAttribute("aria-disabled", "true");
+                }
+                if (props.isSubmitted) {
+                    btnViewSubmission.href = '@Url.Action("ViewSubmission", "Student")' + '?assignmentId=' + encodeURIComponent(event.id);
+                    btnViewSubmission.classList.remove("disabled");
+                    btnViewSubmission.removeAttribute("aria-disabled");
+                } else {
+                    btnViewSubmission.href = "#";
+                    btnViewSubmission.classList.add("disabled");
+                    btnViewSubmission.setAttribute("aria-disabled", "true");
+                }
+                var submissionArea = document.getElementById("assignmentSubmissionArea");
+                if (submissionArea) {
+                    submissionArea.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
+            }
+
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: "dayGridMonth",
+                timeZone: "Asia/Colombo",
+                height: 680,
+                headerToolbar: {
+                    left: "prev,next today",
+                    center: "title",
+                    right: "dayGridMonth,timeGridWeek"
+                },
+                events: coloredEvents,
+                eventClick: function (info) {
+                    info.jsEvent.preventDefault();
+                    if (info.event.startStr) {
+                        setActiveDateCell(info.event.startStr.substring(0, 10));
+                    }
+                    renderDetails(info.event);
+                },
+                dateClick: function (info) {
+                    setActiveDateCell(info.dateStr);
+                    const sameDayAssignments = assignments.filter(a => a.localDate === info.dateStr);
+                    if (sameDayAssignments.length === 1) {
+                        const oneEvent = calendar.getEventById(String(sameDayAssignments[0].id));
+                        if (oneEvent) {
+                            renderDetails(oneEvent);
+                            return;
+                        }
+                    }
+
+                    if (sameDayAssignments.length > 1) {
+                        resetSelectionActions();
+                        const listHtml = sameDayAssignments
+                            .map(item => {
+                                const submitted = item.extendedProps && item.extendedProps.isSubmitted ? "Submitted" : "Pending";
+                                return `<li class="mb-1">${item.title} <span class="text-secondary">(${submitted})</span></li>`;
+                            })
+                            .join("");
+                        detailsPanel.innerHTML = `<h6 class="fw-semibold mb-3">Assignment Details</h6><p class="mb-2">Assignments on <strong>${info.dateStr}</strong>:</p><ul class="mb-0">${listHtml}</ul><p class="text-secondary mt-2 mb-0">Click a specific assignment event to open full details and submit.</p>`;
+                        return;
+                    }
+
+                    if (!sameDayAssignments.length) {
+                        resetSelectionActions();
+                        detailsPanel.innerHTML = `<h6 class="fw-semibold mb-3">Assignment Details</h6><p class="text-secondary mb-0">No assignment on ${info.dateStr}. Select a highlighted assignment date.</p>`;
+                    }
+                }
+            });
+
+            calendar.render();
+        })();
+    </script>
+}

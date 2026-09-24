@@ -1,0 +1,68 @@
+@model UniManage.ViewModels.CourseListViewModel
+@{
+    ViewBag.Title = "Courses";
+}
+<div class="content-spacious">
+<h2 class="section-title">Explore Courses</h2>
+<form method="get" class="card card-body card-body-spacious mb-4 no-hover-card">
+    <h5 class="fw-bold mb-3">Filter Courses</h5>
+    @if (ViewBag.FilterError != null)
+    {
+        <div class="alert alert-danger py-2 mb-3">@ViewBag.FilterError</div>
+    }
+    <div class="row g-2 align-items-end">
+        <div class="col-lg-4">
+            <label class="form-label">Search</label>
+            <input name="search" value="@Model.Search" class="form-control" placeholder="Course title" />
+        </div>
+        <div class="col-lg-3">
+            <label class="form-label">Category</label>
+            <select name="categoryId" class="form-select">
+                <option value="">All categories</option>
+                @foreach (var category in Model.Categories)
+                {
+                    <option selected="@(Model.CategoryId == category.Id)" value="@category.Id">@category.Name</option>
+                }
+            </select>
+        </div>
+        <div class="col-lg-2">
+            <label class="form-label">Max Price</label>
+            <input name="maxPrice" value="@Model.MaxPrice" class="form-control" placeholder="e.g. 200" />
+        </div>
+        <div class="col-lg-3 d-flex gap-2">
+            <button class="btn btn-primary flex-fill" name="apply" value="true">Apply</button>
+            <a class="btn btn-outline-primary flex-fill" href="@Url.Action("Index")">Clear</a>
+        </div>
+    </div>
+</form>
+<div class="row">
+    @if (Model.Courses.Count == 0)
+    {
+        <div class="col-12">
+            <div class="card shadow-sm p-2">
+                <div class="card-body card-body-spacious text-center">
+                    <h5 class="fw-semibold mb-2">No courses found</h5>
+                    <p class="text-secondary mb-0">We could not find any course for your search or filters. Try another keyword, category, or price.</p>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        foreach (var course in Model.Courses)
+        {
+            <div class="col-md-6 col-xl-4 mb-3">
+            <div class="card h-100 shadow-sm course-card no-hover-card">
+                    <img src="@course.ImageUrl" class="card-img-top" alt="@course.Title" style="height: 190px; object-fit: cover;" />
+                    <div class="card-body card-body-spacious">
+                        <span class="badge bg-light text-primary mb-2">@(course.CourseCategory != null ? course.CourseCategory.Name : "N/A")</span>
+                        <h5 class="fw-semibold">@course.Title</h5>
+                        <p class="fw-bold">LKR @course.Price</p>
+                        <a class="btn btn-outline-primary" href="@Url.Action("Details", new { id = course.Id })">Details</a>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+</div>

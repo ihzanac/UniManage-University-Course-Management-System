@@ -1,0 +1,37 @@
+@model UniManage.ViewModels.LoginViewModel
+@{
+    ViewBag.Title = "Login";
+    var role = Request.QueryString["role"];
+    if (string.IsNullOrWhiteSpace(role))
+    {
+        role = "User";
+    }
+}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm no-hover-card">
+            <div class="card-body p-4">
+                <h3 class="fw-bold mb-1">@role Login</h3>
+                <p class="text-secondary mb-3">Sign in securely to your @role.ToLower() portal.</p>
+                <form method="post">
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(false, "", new { @class = "text-danger mb-2" })
+                    <div class="mb-3">@Html.LabelFor(m => m.Email)@Html.TextBoxFor(m => m.Email, new { @class = "form-control" })@Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })</div>
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.Password)
+                        <div class="input-group">
+                            @Html.PasswordFor(m => m.Password, new { @class = "form-control", id = "loginPassword" })
+                            <button class="btn btn-outline-primary toggle-password" type="button" data-target="loginPassword">Show</button>
+                        </div>
+                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                    </div>
+                    <button class="btn btn-primary w-100">Login</button>
+                </form>
+                <a class="d-inline-block mt-3" href="@Url.Action("ForgotPassword")">Forgot password?</a>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @Html.Partial("_ValidationScriptsPartial")
+}
