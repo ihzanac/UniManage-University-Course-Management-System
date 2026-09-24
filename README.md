@@ -222,6 +222,7 @@ UniManage follows a 3-Tier Architecture.
                     │ 🗄️ Data Tier        │
                     │    SQL Server       │
                     └─────────────────────┘
+---
 
 📂 Project Structure
 
